@@ -1,0 +1,1559 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DK Degenerates — League Portal</title>
+<style>
+:root{
+  color-scheme:dark;
+  --page:#0d0d0d;--surface:#1a1a19;--surface-2:#211f1e;
+  --ink:#fff;--ink-2:#c3c2b7;--muted:#898781;
+  --grid:#2c2c2a;--axis:#383835;--border:rgba(255,255,255,0.10);
+  --good:#0ca30c;--bad:#e66767;--gold:#fab219;
+  --s1:#3987e5;--s2:#d95926;--s3:#199e70;--s4:#c98500;--s5:#d55181;--s6:#9085e9;
+  --radius:14px;--font:system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+:root[data-theme="light"]{
+  color-scheme:light;
+  --page:#f9f9f7;--surface:#fcfcfb;--surface-2:#f2f1ec;
+  --ink:#0b0b0b;--ink-2:#52514e;--muted:#898781;
+  --grid:#e1e0d9;--axis:#c3c2b7;--border:rgba(11,11,11,0.10);
+  --good:#0a8f0a;--bad:#d03b3b;--gold:#b8790a;
+  --s1:#2a78d6;--s2:#eb6834;--s3:#1baf7a;--s4:#eda100;--s5:#e87ba4;--s6:#4a3aa7;
+}
+*{box-sizing:border-box}html,body{margin:0}
+body{font-family:var(--font);background:var(--page);color:var(--ink);-webkit-font-smoothing:antialiased;line-height:1.5}
+a{color:var(--s1);text-decoration:none}.tnum{font-variant-numeric:tabular-nums}
+header.topbar{position:sticky;top:0;z-index:20;backdrop-filter:saturate(1.4) blur(8px);background:color-mix(in srgb,var(--page) 82%,transparent);border-bottom:1px solid var(--border)}
+.topwrap{max-width:1160px;margin:0 auto;padding:14px 22px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:12px;font-weight:800;font-size:19px;letter-spacing:-.02em}
+.brand .logo{width:36px;height:36px;border-radius:9px;background:linear-gradient(135deg,var(--s1),var(--s6));display:grid;place-items:center;font-size:19px}
+.brand small{display:block;font-weight:500;font-size:11px;color:var(--muted)}
+.spacer{flex:1}
+.status{font-size:11px;font-weight:600;padding:4px 9px;border-radius:999px;border:1px solid var(--border);color:var(--muted)}
+.status.live{color:var(--good);border-color:color-mix(in srgb,var(--good) 40%,transparent)}
+select,.btn,input{font-family:inherit;font-size:13px;color:var(--ink);background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:7px 11px}
+.btn,select{cursor:pointer}.btn:hover,select:hover{border-color:var(--muted)}
+.btn.primary{background:var(--s1);border-color:var(--s1);color:#fff;font-weight:700}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+nav.tabs{max-width:1160px;margin:0 auto;padding:0 22px;display:flex;gap:4px;overflow-x:auto}
+.tab{appearance:none;border:0;background:none;font-family:inherit;font-size:14px;font-weight:600;color:var(--muted);padding:12px 14px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap}
+.tab:hover{color:var(--ink-2)}.tab.active{color:var(--ink);border-bottom-color:var(--s1)}
+main{max-width:1160px;margin:0 auto;padding:26px 22px 80px}
+.view{display:none;animation:fade .3s ease}.view.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+h2.section{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:34px 0 14px;font-weight:700}
+h2.section:first-child{margin-top:0}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px}
+.grid{display:grid;gap:16px}.g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:repeat(3,1fr)}
+@media(max-width:820px){.g2,.g3{grid-template-columns:1fr 1fr}}
+@media(max-width:560px){.g2,.g3{grid-template-columns:1fr}.topwrap{padding:12px 16px}main{padding:20px 14px 70px}}
+/* ---- responsive: wide tables scroll horizontally within their card ---- */
+.card{overflow-x:auto;-webkit-overflow-scrolling:touch}
+nav.tabs{-webkit-overflow-scrolling:touch}
+@media(max-width:640px){
+  main{padding:18px 12px 64px}
+  th,td{padding:8px 8px}
+  .tab{padding:11px 11px;font-size:13.5px}
+  h2.section{margin:26px 0 12px}
+  /* pin the identifier (first) column while the rest scrolls */
+  .card table th:first-child,.card table td:first-child{position:sticky;left:0;background:var(--surface);z-index:2}
+  .wk td.wklbl{position:sticky;left:0;background:var(--surface);z-index:2}
+  .champ-banner .cup{font-size:30px}.champ-banner .who{font-size:18px}
+}
+@media(max-width:430px){.status{display:none}}
+.champ-banner{display:flex;align-items:center;gap:16px;background:linear-gradient(135deg,color-mix(in srgb,var(--gold) 20%,var(--surface)),var(--surface));border:1px solid color-mix(in srgb,var(--gold) 35%,transparent);border-radius:var(--radius);padding:16px 20px}
+.champ-banner .cup{font-size:38px}.champ-banner .who{font-size:22px;font-weight:800}.champ-banner .sub{font-size:12.5px;color:var(--ink-2)}
+.tile{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:15px 17px}
+.tile .k{font-size:11.5px;color:var(--muted);font-weight:700;letter-spacing:.02em;text-transform:uppercase}
+.tile .v{font-size:26px;font-weight:800;letter-spacing:-.02em;margin-top:5px}
+.tile .v small{font-size:14px;color:var(--muted);font-weight:600}.tile .s{font-size:12.5px;color:var(--ink-2);margin-top:2px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:right;padding:9px 9px;border-bottom:1px solid var(--border);white-space:nowrap}
+th:first-child,td:first-child{text-align:left}
+thead th{font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);font-weight:700;border-bottom:1px solid var(--axis)}
+tbody tr:hover{background:var(--surface-2)}
+td.who{display:flex;align-items:center;gap:9px;font-weight:600}
+.dot{width:10px;height:10px;border-radius:3px;flex:none}
+.rank{color:var(--muted);width:20px;display:inline-block;text-align:right;margin-right:7px;font-variant-numeric:tabular-nums}
+.badge-champ{font-size:10.5px;font-weight:800;color:var(--gold);border:1px solid color-mix(in srgb,var(--gold) 40%,transparent);border-radius:999px;padding:2px 7px}
+.svgc{width:100%;height:auto;display:block;overflow:visible}.svgc text{font-family:var(--font)}
+.axislbl{fill:var(--muted);font-size:12.5px}.vallbl{fill:var(--ink);font-size:13.5px;font-weight:700;font-variant-numeric:tabular-nums}
+.legend{display:flex;flex-wrap:wrap;gap:10px 16px;margin-top:12px}
+.legend .li{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--ink-2)}
+.legend .li .sw{width:12px;height:12px;border-radius:3px}
+.wk{overflow-x:auto}.wk table{font-size:12.5px}
+.wk th,.wk td{border:1px solid var(--border);text-align:center;padding:0}
+.wk thead th{padding:9px 8px}
+.wk td.wklbl{text-align:left;padding:7px 11px;font-weight:600;color:var(--ink-2);white-space:nowrap}
+.wk td.pl{width:92px;height:40px}
+.cellwrap{display:flex;flex-direction:column;align-items:center;justify-content:center;height:40px;line-height:1.15}
+.cellwrap .p{font-weight:800;font-size:13px}.cellwrap .sc{font-size:11px;opacity:.85;font-variant-numeric:tabular-nums}
+.hint{font-size:12.5px;color:var(--muted);margin:9px 0 0}
+.footer{color:var(--muted);font-size:12.5px;margin-top:40px;text-align:center;line-height:1.7}
+.tag{display:inline-block;font-size:11px;color:var(--muted);border:1px solid var(--border);border-radius:999px;padding:2px 9px;margin-left:8px;vertical-align:middle}
+pre{background:var(--surface-2);border:1px solid var(--border);border-radius:9px;padding:12px 14px;overflow:auto;font-size:12.5px}
+/* entry form */
+.form-row{display:flex;gap:12px;flex-wrap:wrap;align-items:end;margin-bottom:16px}
+.field{display:flex;flex-direction:column;gap:5px}
+.field label{font-size:11.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.03em}
+.field input,.field select{min-width:120px}
+.entry-tbl{border-collapse:collapse;width:auto;margin-top:4px}
+.entry-tbl th,.entry-tbl td{border-bottom:1px solid var(--border);padding:10px 22px 10px 0;text-align:left;white-space:nowrap}
+.entry-tbl th{font-size:11.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);font-weight:700}
+.entry-tbl td.who{font-weight:600;min-width:130px}
+.entry-tbl select{width:92px}
+.entry-tbl input{width:128px}
+.entry-tbl th:last-child,.entry-tbl td:last-child{padding-right:0}
+.msg{margin-top:14px;font-size:13.5px;font-weight:600;padding:10px 13px;border-radius:9px;display:none}
+.msg.show{display:block}
+.msg.ok{color:var(--good);background:color-mix(in srgb,var(--good) 12%,transparent);border:1px solid color-mix(in srgb,var(--good) 30%,transparent)}
+.msg.err{color:var(--bad);background:color-mix(in srgb,var(--bad) 12%,transparent);border:1px solid color-mix(in srgb,var(--bad) 30%,transparent)}
+.notice{font-size:13px;color:var(--ink-2);background:var(--surface-2);border:1px solid var(--border);border-radius:9px;padding:11px 14px;margin-bottom:16px}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="topwrap">
+    <div class="brand"><div class="logo">🦨</div><div>DK Degenerates<small>Daily Fantasy League · est. 2018</small></div></div>
+    <div class="spacer"></div>
+    <span class="status" id="statusPill">local data</span>
+    <select id="seasonSel" aria-label="Season"></select>
+    <button class="btn" id="themeBtn" title="Toggle light / dark">◐</button>
+  </div>
+  <nav class="tabs" id="tabs">
+    <button class="tab active" data-view="season">Season</button>
+    <button class="tab" data-view="results">Weekly Results</button>
+    <button class="tab" data-view="history">History</button>
+    <button class="tab" data-view="records">Record Book</button>
+    <button class="tab" data-view="skunks">🦨 Skunks</button>
+    <button class="tab" data-view="enter">＋ Enter Results</button>
+    <button class="tab" data-view="about">About / Data</button>
+  </nav>
+</header>
+<main>
+  <section class="view active" id="view-season"></section>
+  <section class="view" id="view-results"></section>
+  <section class="view" id="view-history"></section>
+  <section class="view" id="view-records"></section>
+  <section class="view" id="view-skunks"></section>
+  <section class="view" id="view-enter"></section>
+  <section class="view" id="view-about"></section>
+  <div class="footer">DK Degenerates League Portal · built from the Degenerate Tracker · <span id="lastupd"></span></div>
+</main>
+<script>
+/* =================================================================
+   CONFIG  —  after you deploy the Google Apps Script (see the setup
+   guide), paste your Web App URL between the quotes below. Until then
+   the site runs on the built-in data snapshot.
+   ================================================================= */
+const API_URL = "https://script.google.com/macros/s/AKfycbznU2EakCh0KR7GQ9xCvleqUlDgZSJ8YKqu9bfSVl5OlA6xRYSM5NOJQmZ5HU8uImTJ/exec";
+
+/* The season currently in progress. It shows in the dropdown even before any
+   results are entered, and the entry form defaults to it. Bump this each year. */
+const CURRENT_SEASON = 2026;
+
+/* ============ EMBEDDED DATA (offline fallback snapshot) ============ */
+const PLAYERS = ["Dixon", "Chais", "Tiger", "AK", "Sue", "Schmitty"];
+/* rows: [season, weekLabel, kind('r'|'p'|'c'), playerIdxOrName, place|null, score|null] */
+const RAW = [
+[2018, "Championships", "c", 0, 2, 126.88],
+[2018, "Championships", "c", 1, 1, 138.4],
+[2018, "Championships", "c", 2, 5, 109.26],
+[2018, "Championships", "c", 3, 4, 122.06],
+[2018, "Championships", "c", 4, 3, 124.2],
+[2018, "Championships", "c", 5, 6, 104.68],
+[2018, "P2", "p", 0, 3, 144.24],
+[2018, "P1", "p", 0, 4, 111.14],
+[2018, "P2", "p", 1, 6, 95.02],
+[2018, "P1", "p", 1, 1, 120.94],
+[2018, "P2", "p", 2, 4, 135.04],
+[2018, "P1", "p", 2, 6, 102.14],
+[2018, "P2", "p", 3, 1, 149.34],
+[2018, "P1", "p", 3, 2, 116.22],
+[2018, "P2", "p", 4, 5, 108.74],
+[2018, "P1", "p", 4, 5, 106.02],
+[2018, "P2", "p", 5, 2, 148.92],
+[2018, "P1", "p", 5, 3, 113.8],
+[2018, "Week 17", "r", 0, 5, 106.64],
+[2018, "Week 16", "r", 0, 4, 138.36],
+[2018, "Week 15", "r", 0, 3, 124.66],
+[2018, "Week 14", "r", 0, 6, 109.72],
+[2018, "Week 13", "r", 0, 6, 87.72],
+[2018, "Week 12", "r", 0, 5, 120.32],
+[2018, "Week 11", "r", 0, 5, 132.9],
+[2018, "Week 10", "r", 0, 1, 154.2],
+[2018, "Week 9", "r", 0, 2, 160.72],
+[2018, "Week 8", "r", 0, 6, 113.56],
+[2018, "Week 7", "r", 0, 4, 130.18],
+[2018, "Week 6", "r", 0, 2, 162.36],
+[2018, "Week 5", "r", 0, 5, 132.44],
+[2018, "Week 4", "r", 0, 3, 199.5],
+[2018, "Week 3", "r", 0, 1, 157.84],
+[2018, "Week 2", "r", 0, 6, 111.86],
+[2018, "Week 1", "r", 0, 3, 209.86],
+[2018, "Week 17", "r", 1, 4, 114.84],
+[2018, "Week 16", "r", 1, 3, 140.04],
+[2018, "Week 15", "r", 1, 4, 114.62],
+[2018, "Week 14", "r", 1, 4, 135.6],
+[2018, "Week 13", "r", 1, 2, 137.58],
+[2018, "Week 12", "r", 1, 1, 148.24],
+[2018, "Week 11", "r", 1, 4, 136.3],
+[2018, "Week 10", "r", 1, 4, 105.2],
+[2018, "Week 9", "r", 1, 4, 133.28],
+[2018, "Week 8", "r", 1, 1, 198.36],
+[2018, "Week 7", "r", 1, 1, 151.42],
+[2018, "Week 6", "r", 1, 6, 121.9],
+[2018, "Week 5", "r", 1, 2, 145.5],
+[2018, "Week 4", "r", 1, 1, 239.08],
+[2018, "Week 3", "r", 1, 5, 125.46],
+[2018, "Week 2", "r", 1, 3, 125.98],
+[2018, "Week 1", "r", 1, 4, 150.06],
+[2018, "Week 17", "r", 2, 6, 100.94],
+[2018, "Week 16", "r", 2, 1, 168.24],
+[2018, "Week 15", "r", 2, 5, 108.14],
+[2018, "Week 14", "r", 2, 1, 166.28],
+[2018, "Week 13", "r", 2, 3, 134.26],
+[2018, "Week 12", "r", 2, 2, 143.64],
+[2018, "Week 11", "r", 2, 6, 120.98],
+[2018, "Week 10", "r", 2, 5, 96.9],
+[2018, "Week 9", "r", 2, 6, 125.78],
+[2018, "Week 8", "r", 2, 4, 123.3],
+[2018, "Week 7", "r", 2, 5, 118.06],
+[2018, "Week 6", "r", 2, 5, 125.0],
+[2018, "Week 5", "r", 2, 6, 132.0],
+[2018, "Week 4", "r", 2, 5, 174.38],
+[2018, "Week 3", "r", 2, 3, 151.66],
+[2018, "Week 2", "r", 2, 2, 142.98],
+[2018, "Week 1", "r", 2, 5, 147.72],
+[2018, "Week 17", "r", 3, 2, 146.32],
+[2018, "Week 16", "r", 3, 5, 136.24],
+[2018, "Week 15", "r", 3, 2, 139.4],
+[2018, "Week 14", "r", 3, 2, 161.92],
+[2018, "Week 13", "r", 3, 4, 110.94],
+[2018, "Week 12", "r", 3, 3, 143.56],
+[2018, "Week 11", "r", 3, 3, 144.6],
+[2018, "Week 10", "r", 3, 6, 95.1],
+[2018, "Week 9", "r", 3, 5, 132.54],
+[2018, "Week 8", "r", 3, 3, 139.0],
+[2018, "Week 7", "r", 3, 2, 140.42],
+[2018, "Week 6", "r", 3, 3, 147.4],
+[2018, "Week 5", "r", 3, 1, 168.34],
+[2018, "Week 4", "r", 3, 4, 188.58],
+[2018, "Week 3", "r", 3, 4, 128.2],
+[2018, "Week 2", "r", 3, 5, 114.6],
+[2018, "Week 1", "r", 3, 1, 254.4],
+[2018, "Week 17", "r", 4, 1, 155.32],
+[2018, "Week 16", "r", 4, 6, 109.12],
+[2018, "Week 15", "r", 4, 1, 156.86],
+[2018, "Week 14", "r", 4, 3, 156.12],
+[2018, "Week 13", "r", 4, 5, 108.92],
+[2018, "Week 12", "r", 4, 4, 139.48],
+[2018, "Week 11", "r", 4, 1, 145.7],
+[2018, "Week 10", "r", 4, 2, 142.74],
+[2018, "Week 9", "r", 4, 3, 150.72],
+[2018, "Week 8", "r", 4, 2, 149.16],
+[2018, "Week 7", "r", 4, 6, 78.24],
+[2018, "Week 6", "r", 4, 4, 137.66],
+[2018, "Week 5", "r", 4, 3, 142.7],
+[2018, "Week 4", "r", 4, 6, 142.16],
+[2018, "Week 3", "r", 4, 2, 156.16],
+[2018, "Week 2", "r", 4, 4, 120.06],
+[2018, "Week 1", "r", 4, 6, 102.04],
+[2018, "Week 17", "r", 5, 3, 138.54],
+[2018, "Week 16", "r", 5, 2, 153.88],
+[2018, "Week 15", "r", 5, 6, 87.14],
+[2018, "Week 14", "r", 5, 5, 112.04],
+[2018, "Week 13", "r", 5, 1, 144.04],
+[2018, "Week 12", "r", 5, 6, 105.92],
+[2018, "Week 11", "r", 5, 2, 145.22],
+[2018, "Week 10", "r", 5, 3, 111.52],
+[2018, "Week 9", "r", 5, 1, 167.34],
+[2018, "Week 8", "r", 5, 5, 118.66],
+[2018, "Week 7", "r", 5, 3, 130.26],
+[2018, "Week 6", "r", 5, 1, 195.5],
+[2018, "Week 5", "r", 5, 4, 133.28],
+[2018, "Week 4", "r", 5, 2, 206.06],
+[2018, "Week 3", "r", 5, 6, 113.4],
+[2018, "Week 2", "r", 5, 1, 166.98],
+[2018, "Week 1", "r", 5, 2, 248.76],
+[2019, "Championships", "c", 0, 5, 102.26],
+[2019, "Championships", "c", 1, 3, 113.96],
+[2019, "Championships", "c", 2, 2, 117.36],
+[2019, "Championships", "c", 3, 1, 157.96],
+[2019, "Championships", "c", 4, 4, 111.86],
+[2019, "Championships", "c", 5, 6, null],
+[2019, "P2", "p", 0, 2, 157.86],
+[2019, "P1", "p", 0, 3, 125.3],
+[2019, "P2", "p", 1, 4, 135.66],
+[2019, "P1", "p", 1, 2, 130.0],
+[2019, "P2", "p", 2, 6, null],
+[2019, "P1", "p", 2, 1, 144.46],
+[2019, "P2", "p", 3, 5, 126.82],
+[2019, "P1", "p", 3, 5, 121.32],
+[2019, "P2", "p", 4, 1, 158.24],
+[2019, "P1", "p", 4, 4, 124.96],
+[2019, "P2", "p", 5, 3, 151.34],
+[2019, "P1", "p", 5, 6, 109.52],
+[2019, "Week 17", "r", 0, 2, 158.12],
+[2019, "Week 16", "r", 0, 2, 165.72],
+[2019, "Week 15", "r", 0, 1, 177.66],
+[2019, "Week 14", "r", 0, 6, 93.62],
+[2019, "Week 13", "r", 0, 2, 105.35],
+[2019, "Week 12", "r", 0, 3, 139.82],
+[2019, "Week 11", "r", 0, 4, 89.84],
+[2019, "Week 10", "r", 0, 5, 129.08],
+[2019, "Week 9", "r", 0, 6, 110.52],
+[2019, "Week 8", "r", 0, 4, 144.84],
+[2019, "Week 7", "r", 0, 3, 101.86],
+[2019, "Week 6", "r", 0, 5, 132.24],
+[2019, "Week 5", "r", 0, 5, 109.2],
+[2019, "Week 4", "r", 0, 4, 129.3],
+[2019, "Week 3", "r", 0, 5, 124.34],
+[2019, "Week 2", "r", 0, 5, 93.72],
+[2019, "Week 1", "r", 0, 6, 108.66],
+[2019, "Week 17", "r", 1, 5, 146.22],
+[2019, "Week 16", "r", 1, 3, 164.92],
+[2019, "Week 15", "r", 1, 3, 162.66],
+[2019, "Week 14", "r", 1, 3, 146.5],
+[2019, "Week 13", "r", 1, 3, 103.5],
+[2019, "Week 12", "r", 1, 2, 141.78],
+[2019, "Week 11", "r", 1, 3, 111.44],
+[2019, "Week 10", "r", 1, 3, 145.82],
+[2019, "Week 9", "r", 1, 1, 180.12],
+[2019, "Week 8", "r", 1, 2, 156.06],
+[2019, "Week 7", "r", 1, 6, 92.02],
+[2019, "Week 6", "r", 1, 2, 147.7],
+[2019, "Week 5", "r", 1, 6, 102.54],
+[2019, "Week 4", "r", 1, 6, 102.8],
+[2019, "Week 3", "r", 1, 4, 143.54],
+[2019, "Week 2", "r", 1, 6, 85.22],
+[2019, "Week 1", "r", 1, 4, 147.12],
+[2019, "Week 17", "r", 2, 3, 151.82],
+[2019, "Week 16", "r", 2, 5, 135.12],
+[2019, "Week 15", "r", 2, 2, 165.62],
+[2019, "Week 14", "r", 2, 4, 129.3],
+[2019, "Week 13", "r", 2, 1, 116.46],
+[2019, "Week 12", "r", 2, 4, 128.52],
+[2019, "Week 11", "r", 2, 5, 89.52],
+[2019, "Week 10", "r", 2, 2, 149.68],
+[2019, "Week 9", "r", 2, 3, 138.84],
+[2019, "Week 8", "r", 2, 3, 152.8],
+[2019, "Week 7", "r", 2, 5, 97.94],
+[2019, "Week 6", "r", 2, 4, 135.9],
+[2019, "Week 5", "r", 2, 2, 156.74],
+[2019, "Week 4", "r", 2, 5, 120.18],
+[2019, "Week 3", "r", 2, 6, 94.12],
+[2019, "Week 2", "r", 2, 4, 122.42],
+[2019, "Week 1", "r", 2, 5, 112.86],
+[2019, "Week 17", "r", 3, 1, 171.72],
+[2019, "Week 16", "r", 3, 1, 182.12],
+[2019, "Week 15", "r", 3, 6, 118.44],
+[2019, "Week 14", "r", 3, 5, 177.52],
+[2019, "Week 13", "r", 3, 6, 78.12],
+[2019, "Week 12", "r", 3, 6, 120.56],
+[2019, "Week 11", "r", 3, 6, 74.26],
+[2019, "Week 10", "r", 3, 6, null],
+[2019, "Week 9", "r", 3, 4, 129.26],
+[2019, "Week 8", "r", 3, 1, 169.72],
+[2019, "Week 7", "r", 3, 2, 110.32],
+[2019, "Week 6", "r", 3, 3, 137.14],
+[2019, "Week 5", "r", 3, 4, 118.78],
+[2019, "Week 4", "r", 3, 3, 141.6],
+[2019, "Week 3", "r", 3, 3, 146.04],
+[2019, "Week 2", "r", 3, 2, 167.58],
+[2019, "Week 1", "r", 3, 3, 154.02],
+[2019, "Week 17", "r", 4, 6, 145.02],
+[2019, "Week 16", "r", 4, 6, 116.18],
+[2019, "Week 15", "r", 4, 4, 144.2],
+[2019, "Week 14", "r", 4, 2, 153.0],
+[2019, "Week 13", "r", 4, 4, 96.76],
+[2019, "Week 12", "r", 4, 1, 148.38],
+[2019, "Week 11", "r", 4, 1, 124.12],
+[2019, "Week 10", "r", 4, 1, 174.66],
+[2019, "Week 9", "r", 4, 2, 144.62],
+[2019, "Week 8", "r", 4, 5, 141.86],
+[2019, "Week 7", "r", 4, 4, 98.96],
+[2019, "Week 6", "r", 4, 1, 152.54],
+[2019, "Week 5", "r", 4, 3, 133.26],
+[2019, "Week 4", "r", 4, 1, 152.48],
+[2019, "Week 3", "r", 4, 2, 181.54],
+[2019, "Week 2", "r", 4, 3, 136.02],
+[2019, "Week 1", "r", 4, 1, 164.92],
+[2019, "Week 17", "r", 5, 4, 150.92],
+[2019, "Week 16", "r", 5, 4, 161.76],
+[2019, "Week 15", "r", 5, 5, 137.42],
+[2019, "Week 14", "r", 5, 1, 164.14],
+[2019, "Week 13", "r", 5, 5, 96.02],
+[2019, "Week 12", "r", 5, 5, 124.94],
+[2019, "Week 11", "r", 5, 2, 115.86],
+[2019, "Week 10", "r", 5, 4, 137.58],
+[2019, "Week 9", "r", 5, 5, 122.32],
+[2019, "Week 8", "r", 5, 6, 114.2],
+[2019, "Week 7", "r", 5, 1, 129.76],
+[2019, "Week 6", "r", 5, 6, 119.14],
+[2019, "Week 5", "r", 5, 1, 169.7],
+[2019, "Week 4", "r", 5, 2, 145.7],
+[2019, "Week 3", "r", 5, 1, 186.96],
+[2019, "Week 2", "r", 5, 1, 170.7],
+[2019, "Week 1", "r", 5, 2, 159.22],
+[2020, "Championships", "c", 0, 3, 145.9],
+[2020, "Championships", "c", 1, 4, 145.88],
+[2020, "Championships", "c", 2, 1, 179.48],
+[2020, "Championships", "c", 3, 2, 168.04],
+[2020, "Championships", "c", 4, 5, 130.48],
+[2020, "Championships", "c", 5, 6, 126.58],
+[2020, "P2", "p", 0, 4, 107.76],
+[2020, "P1", "p", 0, 3, 126.56],
+[2020, "P2", "p", 1, 6, 102.0],
+[2020, "P1", "p", 1, 2, 133.56],
+[2020, "P2", "p", 2, 1, 125.76],
+[2020, "P1", "p", 2, 5, 120.3],
+[2020, "P2", "p", 3, 3, 113.8],
+[2020, "P1", "p", 3, 4, 124.66],
+[2020, "P2", "p", 4, 5, 106.96],
+[2020, "P1", "p", 4, 6, 76.4],
+[2020, "P2", "p", 5, 2, 114.64],
+[2020, "P1", "p", 5, 1, 159.66],
+[2020, "Week 17", "r", 0, 6, 114.82],
+[2020, "Week 16", "r", 0, 5, 104.88],
+[2020, "Week 15", "r", 0, 4, 122.48],
+[2020, "Week 14", "r", 0, 4, 122.58],
+[2020, "Week 13", "r", 0, 2, 146.8],
+[2020, "Week 12", "r", 0, 1, 156.18],
+[2020, "Week 11", "r", 0, 5, 107.06],
+[2020, "Week 10", "r", 0, 2, 122.58],
+[2020, "Week 9", "r", 0, 6, 120.4],
+[2020, "Week 8", "r", 0, 5, 110.66],
+[2020, "Week 7", "r", 0, 6, 115.0],
+[2020, "Week 6", "r", 0, 6, 79.34],
+[2020, "Week 5", "r", 0, 3, 130.98],
+[2020, "Week 4", "r", 0, 6, 107.58],
+[2020, "Week 3", "r", 0, 3, 136.18],
+[2020, "Week 2", "r", 0, 2, 139.34],
+[2020, "Week 1", "r", 0, 4, 136.84],
+[2020, "Week 17", "r", 1, 4, 163.7],
+[2020, "Week 16", "r", 1, 1, 166.62],
+[2020, "Week 15", "r", 1, 1, 175.62],
+[2020, "Week 14", "r", 1, 2, 130.58],
+[2020, "Week 13", "r", 1, 5, 123.62],
+[2020, "Week 12", "r", 1, 3, 136.28],
+[2020, "Week 11", "r", 1, 2, 150.12],
+[2020, "Week 10", "r", 1, 5, 100.08],
+[2020, "Week 9", "r", 1, 1, 177.24],
+[2020, "Week 8", "r", 1, 3, 117.68],
+[2020, "Week 7", "r", 1, 1, 182.3],
+[2020, "Week 6", "r", 1, 2, 139.96],
+[2020, "Week 5", "r", 1, 2, 157.9],
+[2020, "Week 4", "r", 1, 5, 118.3],
+[2020, "Week 3", "r", 1, 4, 133.5],
+[2020, "Week 2", "r", 1, 3, 125.74],
+[2020, "Week 1", "r", 1, 1, 202.98],
+[2020, "Week 17", "r", 2, 2, 181.0],
+[2020, "Week 16", "r", 2, 2, 152.3],
+[2020, "Week 15", "r", 2, 6, null],
+[2020, "Week 14", "r", 2, 5, 122.48],
+[2020, "Week 13", "r", 2, 3, 144.34],
+[2020, "Week 12", "r", 2, 6, 90.08],
+[2020, "Week 11", "r", 2, 4, 124.82],
+[2020, "Week 10", "r", 2, 4, 114.78],
+[2020, "Week 9", "r", 2, 2, 169.9],
+[2020, "Week 8", "r", 2, 2, 127.22],
+[2020, "Week 7", "r", 2, 3, 177.7],
+[2020, "Week 6", "r", 2, 4, 119.52],
+[2020, "Week 5", "r", 2, 6, 101.58],
+[2020, "Week 4", "r", 2, 3, 143.6],
+[2020, "Week 3", "r", 2, 2, 144.42],
+[2020, "Week 2", "r", 2, 5, 93.46],
+[2020, "Week 1", "r", 2, 2, 148.7],
+[2020, "Week 17", "r", 3, 3, 166.0],
+[2020, "Week 16", "r", 3, 4, 127.36],
+[2020, "Week 15", "r", 3, 5, 115.08],
+[2020, "Week 14", "r", 3, 6, 108.62],
+[2020, "Week 13", "r", 3, 4, 135.92],
+[2020, "Week 12", "r", 3, 2, 143.08],
+[2020, "Week 11", "r", 3, 1, 163.18],
+[2020, "Week 10", "r", 3, 1, 134.66],
+[2020, "Week 9", "r", 3, 5, 123.24],
+[2020, "Week 8", "r", 3, 4, 115.54],
+[2020, "Week 7", "r", 3, 2, 182.02],
+[2020, "Week 6", "r", 3, 1, 195.76],
+[2020, "Week 5", "r", 3, 5, 104.36],
+[2020, "Week 4", "r", 3, 1, 187.38],
+[2020, "Week 3", "r", 3, 6, 104.3],
+[2020, "Week 2", "r", 3, 6, 90.6],
+[2020, "Week 1", "r", 3, 5, 128.5],
+[2020, "Week 17", "r", 4, 1, 189.8],
+[2020, "Week 16", "r", 4, 6, 75.5],
+[2020, "Week 15", "r", 4, 2, 158.82],
+[2020, "Week 14", "r", 4, 3, 122.9],
+[2020, "Week 13", "r", 4, 1, 162.5],
+[2020, "Week 12", "r", 4, 5, 116.64],
+[2020, "Week 11", "r", 4, 6, 101.44],
+[2020, "Week 10", "r", 4, 6, 92.36],
+[2020, "Week 9", "r", 4, 4, 128.7],
+[2020, "Week 8", "r", 4, 6, 102.96],
+[2020, "Week 7", "r", 4, 5, 131.9],
+[2020, "Week 6", "r", 4, 5, 95.84],
+[2020, "Week 5", "r", 4, 1, 177.72],
+[2020, "Week 4", "r", 4, 4, 121.98],
+[2020, "Week 3", "r", 4, 1, 175.14],
+[2020, "Week 2", "r", 4, 4, 121.68],
+[2020, "Week 1", "r", 4, 3, 148.0],
+[2020, "Week 17", "r", 5, 5, 153.6],
+[2020, "Week 16", "r", 5, 3, 143.48],
+[2020, "Week 15", "r", 5, 3, 148.36],
+[2020, "Week 14", "r", 5, 1, 151.16],
+[2020, "Week 13", "r", 5, 6, null],
+[2020, "Week 12", "r", 5, 4, 127.4],
+[2020, "Week 11", "r", 5, 3, 149.22],
+[2020, "Week 10", "r", 5, 3, 115.66],
+[2020, "Week 9", "r", 5, 3, 163.46],
+[2020, "Week 8", "r", 5, 1, 137.82],
+[2020, "Week 7", "r", 5, 4, 172.2],
+[2020, "Week 6", "r", 5, 3, 124.12],
+[2020, "Week 5", "r", 5, 4, 118.72],
+[2020, "Week 4", "r", 5, 2, 145.14],
+[2020, "Week 3", "r", 5, 5, 118.8],
+[2020, "Week 2", "r", 5, 1, 158.34],
+[2020, "Week 1", "r", 5, 6, null],
+[2021, "Championships", "c", 0, 4, 131.5],
+[2021, "Championships", "c", 1, 5, 122.7],
+[2021, "Championships", "c", 2, 3, 137.2],
+[2021, "Championships", "c", 3, 2, 139.98],
+[2021, "Championships", "c", 4, 6, 112.6],
+[2021, "Championships", "c", 5, 1, 165.98],
+[2021, "P2", "p", 0, 2, 153.96],
+[2021, "P1", "p", 0, 2, 137.62],
+[2021, "P2", "p", 1, 4, 116.56],
+[2021, "P1", "p", 1, 1, 149.66],
+[2021, "P2", "p", 2, 1, 160.96],
+[2021, "P1", "p", 2, 5, 99.52],
+[2021, "P2", "p", 3, 5, 107.74],
+[2021, "P1", "p", 3, 6, 87.78],
+[2021, "P2", "p", 4, 6, 83.0],
+[2021, "P1", "p", 4, 3, 133.66],
+[2021, "P2", "p", 5, 3, 145.56],
+[2021, "P1", "p", 5, 4, 104.82],
+[2021, "Week 18", "r", 0, 3, 104.64],
+[2021, "Week 17", "r", 0, 3, 127.4],
+[2021, "Week 16", "r", 0, 5, 138.86],
+[2021, "Week 15", "r", 0, 3, 100.84],
+[2021, "Week 14", "r", 0, 1, 146.48],
+[2021, "Week 13", "r", 0, 6, 99.76],
+[2021, "Week 12", "r", 0, 3, 120.08],
+[2021, "Week 11", "r", 0, 1, 162.46],
+[2021, "Week 10", "r", 0, 2, 115.98],
+[2021, "Week 9", "r", 0, 2, 133.9],
+[2021, "Week 8", "r", 0, 3, 138.18],
+[2021, "Week 7", "r", 0, 2, 156.88],
+[2021, "Week 6", "r", 0, 2, 148.58],
+[2021, "Week 5", "r", 0, 6, 113.92],
+[2021, "Week 4", "r", 0, 6, 107.52],
+[2021, "Week 3", "r", 0, 1, 134.24],
+[2021, "Week 2", "r", 0, 6, 89.94],
+[2021, "Week 1", "r", 0, 1, 155.72],
+[2021, "Week 18", "r", 1, 1, 135.56],
+[2021, "Week 17", "r", 1, 1, 168.86],
+[2021, "Week 16", "r", 1, 2, 160.06],
+[2021, "Week 15", "r", 1, 2, 105.34],
+[2021, "Week 14", "r", 1, 2, 139.3],
+[2021, "Week 13", "r", 1, 3, 159.36],
+[2021, "Week 12", "r", 1, 2, 128.68],
+[2021, "Week 11", "r", 1, 4, 117.46],
+[2021, "Week 10", "r", 1, 1, 134.88],
+[2021, "Week 9", "r", 1, 1, 158.1],
+[2021, "Week 8", "r", 1, 2, 148.36],
+[2021, "Week 7", "r", 1, 4, 141.06],
+[2021, "Week 6", "r", 1, 3, 139.06],
+[2021, "Week 5", "r", 1, 3, 130.68],
+[2021, "Week 4", "r", 1, 2, 156.92],
+[2021, "Week 3", "r", 1, 3, 108.92],
+[2021, "Week 2", "r", 1, 3, 137.6],
+[2021, "Week 1", "r", 1, 2, 154.88],
+[2021, "Week 18", "r", 2, 6, 93.72],
+[2021, "Week 17", "r", 2, 4, 124.66],
+[2021, "Week 16", "r", 2, 1, 164.96],
+[2021, "Week 15", "r", 2, 6, 55.06],
+[2021, "Week 14", "r", 2, 6, 109.2],
+[2021, "Week 13", "r", 2, 2, 164.96],
+[2021, "Week 12", "r", 2, 5, 100.42],
+[2021, "Week 11", "r", 2, 3, 122.12],
+[2021, "Week 10", "r", 2, 3, 112.02],
+[2021, "Week 9", "r", 2, 3, 133.44],
+[2021, "Week 8", "r", 2, 4, 136.44],
+[2021, "Week 7", "r", 2, 5, 127.44],
+[2021, "Week 6", "r", 2, 6, 106.98],
+[2021, "Week 5", "r", 2, 1, 169.36],
+[2021, "Week 4", "r", 2, 5, 118.42],
+[2021, "Week 3", "r", 2, 6, 100.44],
+[2021, "Week 2", "r", 2, 4, 114.6],
+[2021, "Week 1", "r", 2, 4, 122.34],
+[2021, "Week 18", "r", 3, 2, 126.64],
+[2021, "Week 17", "r", 3, 5, 120.76],
+[2021, "Week 16", "r", 3, 4, 141.04],
+[2021, "Week 15", "r", 3, 1, 149.74],
+[2021, "Week 14", "r", 3, 5, 113.0],
+[2021, "Week 13", "r", 3, 4, 151.22],
+[2021, "Week 12", "r", 3, 4, 103.98],
+[2021, "Week 11", "r", 3, 5, 105.92],
+[2021, "Week 10", "r", 3, 6, null],
+[2021, "Week 9", "r", 3, 6, 81.76],
+[2021, "Week 8", "r", 3, 1, 177.26],
+[2021, "Week 7", "r", 3, 6, 115.94],
+[2021, "Week 6", "r", 3, 5, 121.48],
+[2021, "Week 5", "r", 3, 2, 142.58],
+[2021, "Week 4", "r", 3, 3, 133.32],
+[2021, "Week 3", "r", 3, 3, 124.12],
+[2021, "Week 2", "r", 3, 1, 165.14],
+[2021, "Week 1", "r", 3, 3, 139.78],
+[2021, "Week 18", "r", 4, 5, 99.2],
+[2021, "Week 17", "r", 4, 6, 97.26],
+[2021, "Week 16", "r", 4, 3, 143.0],
+[2021, "Week 15", "r", 4, 5, 75.24],
+[2021, "Week 14", "r", 4, 3, 125.14],
+[2021, "Week 13", "r", 4, 5, 127.86],
+[2021, "Week 12", "r", 4, 1, 138.92],
+[2021, "Week 11", "r", 4, 6, 87.94],
+[2021, "Week 10", "r", 4, 4, 110.48],
+[2021, "Week 9", "r", 4, 5, 92.18],
+[2021, "Week 8", "r", 4, 6, 70.32],
+[2021, "Week 7", "r", 4, 3, 151.94],
+[2021, "Week 6", "r", 4, 1, 151.24],
+[2021, "Week 5", "r", 4, 5, 119.12],
+[2021, "Week 4", "r", 4, 1, 166.6],
+[2021, "Week 3", "r", 4, 2, 130.22],
+[2021, "Week 2", "r", 4, 2, 148.5],
+[2021, "Week 1", "r", 4, 6, 97.66],
+[2021, "Week 18", "r", 5, 4, 103.94],
+[2021, "Week 17", "r", 5, 2, 148.16],
+[2021, "Week 16", "r", 5, 6, null],
+[2021, "Week 15", "r", 5, 4, 97.24],
+[2021, "Week 14", "r", 5, 4, 123.1],
+[2021, "Week 13", "r", 5, 1, 168.76],
+[2021, "Week 12", "r", 5, 6, 93.08],
+[2021, "Week 11", "r", 5, 2, 149.46],
+[2021, "Week 10", "r", 5, 6, null],
+[2021, "Week 9", "r", 5, 4, 126.5],
+[2021, "Week 8", "r", 5, 5, 116.76],
+[2021, "Week 7", "r", 5, 1, 164.54],
+[2021, "Week 6", "r", 5, 4, 130.98],
+[2021, "Week 5", "r", 5, 4, null],
+[2021, "Week 4", "r", 5, 4, 131.48],
+[2021, "Week 3", "r", 5, 5, 100.5],
+[2021, "Week 2", "r", 5, 5, 107.2],
+[2021, "Week 1", "r", 5, 5, 109.0],
+[2022, "Championships", "c", 0, 6, 76.8],
+[2022, "Championships", "c", 1, 4, 84.9],
+[2022, "Championships", "c", 2, 3, 94.84],
+[2022, "Championships", "c", 3, 2, 102.9],
+[2022, "Championships", "c", 4, 5, 82.8],
+[2022, "Championships", "c", 5, 1, 120.2],
+[2022, "P2", "p", 0, 5, 78.38],
+[2022, "P1", "p", 0, 4, 151.74],
+[2022, "P2", "p", 1, 4, 91.1],
+[2022, "P1", "p", 1, 3, 152.58],
+[2022, "P2", "p", 2, 3, 96.86],
+[2022, "P1", "p", 2, 5, 122.94],
+[2022, "P2", "p", 3, 6, null],
+[2022, "P1", "p", 3, 6, 120.26],
+[2022, "P2", "p", 4, 2, 99.7],
+[2022, "P1", "p", 4, 1, 186.58],
+[2022, "P2", "p", 5, 1, 104.86],
+[2022, "P1", "p", 5, 2, 159.92],
+[2022, "Week 18", "r", 0, 3, 101.96],
+[2022, "Week 17", "r", 0, 2, 115.38],
+[2022, "Week 16", "r", 0, 2, 140.5],
+[2022, "Week 15", "r", 0, 5, 119.4],
+[2022, "Week 14", "r", 0, 1, 137.52],
+[2022, "Week 13", "r", 0, 6, 91.76],
+[2022, "Week 12", "r", 0, 6, 107.86],
+[2022, "Week 11", "r", 0, 2, 115.02],
+[2022, "Week 10", "r", 0, 4, 127.08],
+[2022, "Week 9", "r", 0, 5, 110.46],
+[2022, "Week 8", "r", 0, 4, 153.24],
+[2022, "Week 7", "r", 0, 3, 143.14],
+[2022, "Week 6", "r", 0, 2, 152.88],
+[2022, "Week 5", "r", 0, 4, 117.6],
+[2022, "Week 4", "r", 0, 1, 168.58],
+[2022, "Week 3", "r", 0, 4, 105.4],
+[2022, "Week 2", "r", 0, 4, 101.78],
+[2022, "Week 1", "r", 0, 5, 110.96],
+[2022, "Week 18", "r", 1, 5, 95.86],
+[2022, "Week 17", "r", 1, 5, 93.0],
+[2022, "Week 16", "r", 1, 4, 118.56],
+[2022, "Week 15", "r", 1, 1, 182.0],
+[2022, "Week 14", "r", 1, 2, 132.9],
+[2022, "Week 13", "r", 1, 4, 122.92],
+[2022, "Week 12", "r", 1, 1, 170.5],
+[2022, "Week 11", "r", 1, 5, 106.32],
+[2022, "Week 10", "r", 1, 2, 158.08],
+[2022, "Week 9", "r", 1, 1, 206.62],
+[2022, "Week 8", "r", 1, 2, 157.58],
+[2022, "Week 7", "r", 1, 2, 145.1],
+[2022, "Week 6", "r", 1, 5, 110.66],
+[2022, "Week 5", "r", 1, 1, 168.66],
+[2022, "Week 4", "r", 1, 3, 144.82],
+[2022, "Week 3", "r", 1, 1, 142.2],
+[2022, "Week 2", "r", 1, 3, 113.98],
+[2022, "Week 1", "r", 1, 2, 190.22],
+[2022, "Week 18", "r", 2, 1, 139.1],
+[2022, "Week 17", "r", 2, 1, 118.9],
+[2022, "Week 16", "r", 2, 5, 116.86],
+[2022, "Week 15", "r", 2, 6, 102.42],
+[2022, "Week 14", "r", 2, 4, 114.9],
+[2022, "Week 13", "r", 2, 2, 176.84],
+[2022, "Week 12", "r", 2, 5, 133.3],
+[2022, "Week 11", "r", 2, 3, 109.3],
+[2022, "Week 10", "r", 2, 1, 179.48],
+[2022, "Week 9", "r", 2, 4, 145.12],
+[2022, "Week 8", "r", 2, 5, 141.54],
+[2022, "Week 7", "r", 2, 1, 204.94],
+[2022, "Week 6", "r", 2, 3, 149.12],
+[2022, "Week 5", "r", 2, 3, 131.26],
+[2022, "Week 4", "r", 2, 6, 76.56],
+[2022, "Week 3", "r", 2, 3, 122.8],
+[2022, "Week 2", "r", 2, 2, 116.6],
+[2022, "Week 1", "r", 2, 4, 119.16],
+[2022, "Week 18", "r", 3, 6, 81.3],
+[2022, "Week 17", "r", 3, null, 90.7],
+[2022, "Week 16", "r", 3, 3, 134.6],
+[2022, "Week 15", "r", 3, 2, 144.38],
+[2022, "Week 14", "r", 3, 5, 101.02],
+[2022, "Week 13", "r", 3, 1, 182.06],
+[2022, "Week 12", "r", 3, 2, 150.58],
+[2022, "Week 11", "r", 3, 6, 84.22],
+[2022, "Week 10", "r", 3, 3, 141.28],
+[2022, "Week 9", "r", 3, 3, 163.42],
+[2022, "Week 8", "r", 3, 3, 157.24],
+[2022, "Week 7", "r", 3, 6, 126.7],
+[2022, "Week 6", "r", 3, 1, 174.6],
+[2022, "Week 5", "r", 3, 6, 112.3],
+[2022, "Week 4", "r", 3, 2, 160.78],
+[2022, "Week 3", "r", 3, 6, 88.88],
+[2022, "Week 2", "r", 3, 6, 68.1],
+[2022, "Week 1", "r", 3, 1, 214.16],
+[2022, "Week 18", "r", 4, 2, 110.46],
+[2022, "Week 17", "r", 4, 3, 110.56],
+[2022, "Week 16", "r", 4, 1, 166.5],
+[2022, "Week 15", "r", 4, 3, 133.16],
+[2022, "Week 14", "r", 4, 3, 127.8],
+[2022, "Week 13", "r", 4, 3, 130.66],
+[2022, "Week 12", "r", 4, 3, 147.34],
+[2022, "Week 11", "r", 4, 1, 126.14],
+[2022, "Week 10", "r", 4, 6, 105.8],
+[2022, "Week 9", "r", 4, 6, null],
+[2022, "Week 8", "r", 4, 6, 111.48],
+[2022, "Week 7", "r", 4, 4, 130.0],
+[2022, "Week 6", "r", 4, 6, 93.18],
+[2022, "Week 5", "r", 4, 5, 113.54],
+[2022, "Week 4", "r", 4, 5, 90.98],
+[2022, "Week 3", "r", 4, 5, 90.94],
+[2022, "Week 2", "r", 4, 5, 70.06],
+[2022, "Week 1", "r", 4, 6, 75.4],
+[2022, "Week 18", "r", 5, 4, 101.58],
+[2022, "Week 17", "r", 5, 4, 94.3],
+[2022, "Week 16", "r", 5, 6, 101.4],
+[2022, "Week 15", "r", 5, 4, 123.1],
+[2022, "Week 14", "r", 5, 6, null],
+[2022, "Week 13", "r", 5, 5, 114.66],
+[2022, "Week 12", "r", 5, 4, 140.24],
+[2022, "Week 11", "r", 5, 4, 107.74],
+[2022, "Week 10", "r", 5, 5, 107.8],
+[2022, "Week 9", "r", 5, 2, 173.52],
+[2022, "Week 8", "r", 5, 1, 168.78],
+[2022, "Week 7", "r", 5, 5, 127.2],
+[2022, "Week 6", "r", 5, 4, 144.98],
+[2022, "Week 5", "r", 5, 2, 142.94],
+[2022, "Week 4", "r", 5, 4, 144.3],
+[2022, "Week 3", "r", 5, 2, 127.1],
+[2022, "Week 2", "r", 5, 1, 150.78],
+[2022, "Week 1", "r", 5, 3, 120.92],
+[2023, "Championships", "c", 0, 6, 99.48],
+[2023, "Championships", "c", 1, 1, 126.38],
+[2023, "Championships", "c", 2, 4, 113.68],
+[2023, "Championships", "c", 3, 5, 104.38],
+[2023, "Championships", "c", 4, 3, 116.48],
+[2023, "Championships", "c", 5, 2, 120.18],
+[2023, "P2", "p", 0, 4, 121.56],
+[2023, "P1", "p", 0, 4, 120.78],
+[2023, "P2", "p", 1, 3, 122.58],
+[2023, "P1", "p", 1, 1, 159.32],
+[2023, "P2", "p", 2, 6, 110.56],
+[2023, "P1", "p", 2, 2, 149.38],
+[2023, "P2", "p", 3, 5, 114.98],
+[2023, "P1", "p", 3, 3, 142.58],
+[2023, "P2", "p", 4, 2, 123.58],
+[2023, "P1", "p", 4, 6, 108.08],
+[2023, "P2", "p", 5, 1, 125.38],
+[2023, "P1", "p", 5, 5, 119.42],
+[2023, "Week 18", "r", 0, 5, 125.06],
+[2023, "Week 17", "r", 0, 6, 116.74],
+[2023, "Week 16", "r", 0, 5, 112.2],
+[2023, "Week 15", "r", 0, 5, 117.86],
+[2023, "Week 14", "r", 0, 3, 116.12],
+[2023, "Week 13", "r", 0, 4, 133.86],
+[2023, "Week 12", "r", 0, 4, 128.2],
+[2023, "Week 11", "r", 0, 2, 144.74],
+[2023, "Week 10", "r", 0, 3, 139.22],
+[2023, "Week 9", "r", 0, 4, 104.88],
+[2023, "Week 8", "r", 0, 4, 134.08],
+[2023, "Week 7", "r", 0, 6, 84.76],
+[2023, "Week 6", "r", 0, 4, 141.4],
+[2023, "Week 5", "r", 0, 6, 101.44],
+[2023, "Week 4", "r", 0, 5, 89.8],
+[2023, "Week 3", "r", 0, 5, 125.88],
+[2023, "Week 2", "r", 0, 1, 152.0],
+[2023, "Week 1", "r", 0, 2, 144.88],
+[2023, "Week 18", "r", 1, 3, 146.56],
+[2023, "Week 17", "r", 1, 2, 150.56],
+[2023, "Week 16", "r", 1, 2, 117.04],
+[2023, "Week 15", "r", 1, 1, 169.06],
+[2023, "Week 14", "r", 1, 2, 117.54],
+[2023, "Week 13", "r", 1, 6, 125.76],
+[2023, "Week 12", "r", 1, 1, 140.5],
+[2023, "Week 11", "r", 1, 4, 139.46],
+[2023, "Week 10", "r", 1, 6, 99.38],
+[2023, "Week 9", "r", 1, 6, 93.88],
+[2023, "Week 8", "r", 1, 1, 202.86],
+[2023, "Week 7", "r", 1, 3, 121.06],
+[2023, "Week 6", "r", 1, 2, 153.26],
+[2023, "Week 5", "r", 1, 2, 153.64],
+[2023, "Week 4", "r", 1, 6, 66.22],
+[2023, "Week 3", "r", 1, 2, 167.08],
+[2023, "Week 2", "r", 1, 3, 94.46],
+[2023, "Week 1", "r", 1, 3, 129.24],
+[2023, "Week 18", "r", 2, 1, 166.54],
+[2023, "Week 17", "r", 2, 1, 179.26],
+[2023, "Week 16", "r", 2, 1, 162.64],
+[2023, "Week 15", "r", 2, 3, 159.02],
+[2023, "Week 14", "r", 2, 1, 167.52],
+[2023, "Week 13", "r", 2, 2, 145.08],
+[2023, "Week 12", "r", 2, 6, 109.24],
+[2023, "Week 11", "r", 2, 1, 149.82],
+[2023, "Week 10", "r", 2, 5, 115.32],
+[2023, "Week 9", "r", 2, 1, 130.66],
+[2023, "Week 8", "r", 2, 3, 147.48],
+[2023, "Week 7", "r", 2, 1, 126.86],
+[2023, "Week 6", "r", 2, 3, 149.5],
+[2023, "Week 5", "r", 2, 5, 122.42],
+[2023, "Week 4", "r", 2, 4, 117.2],
+[2023, "Week 3", "r", 2, 3, 162.3],
+[2023, "Week 2", "r", 2, 2, 100.28],
+[2023, "Week 1", "r", 2, 4, 124.22],
+[2023, "Week 18", "r", 3, 6, 94.96],
+[2023, "Week 17", "r", 3, 5, 121.18],
+[2023, "Week 16", "r", 3, 6, 109.42],
+[2023, "Week 15", "r", 3, 4, 125.34],
+[2023, "Week 14", "r", 3, 6, 103.64],
+[2023, "Week 13", "r", 3, 1, 149.36],
+[2023, "Week 12", "r", 3, 5, 113.04],
+[2023, "Week 11", "r", 3, 5, 116.06],
+[2023, "Week 10", "r", 3, 1, 144.92],
+[2023, "Week 9", "r", 3, 3, 110.92],
+[2023, "Week 8", "r", 3, 6, 93.4],
+[2023, "Week 7", "r", 3, 2, 126.7],
+[2023, "Week 6", "r", 3, 1, 171.26],
+[2023, "Week 5", "r", 3, 3, 133.18],
+[2023, "Week 4", "r", 3, 2, 128.22],
+[2023, "Week 3", "r", 3, 4, 131.34],
+[2023, "Week 2", "r", 3, 6, 76.94],
+[2023, "Week 1", "r", 3, 1, 174.92],
+[2023, "Week 18", "r", 4, 4, 138.28],
+[2023, "Week 17", "r", 4, 4, 125.4],
+[2023, "Week 16", "r", 4, 4, 113.58],
+[2023, "Week 15", "r", 4, 6, 109.98],
+[2023, "Week 14", "r", 4, 5, 111.24],
+[2023, "Week 13", "r", 4, 5, 133.68],
+[2023, "Week 12", "r", 4, 2, 140.36],
+[2023, "Week 11", "r", 4, 3, 142.2],
+[2023, "Week 10", "r", 4, 4, 136.78],
+[2023, "Week 9", "r", 4, 5, 101.74],
+[2023, "Week 8", "r", 4, 5, 120.22],
+[2023, "Week 7", "r", 4, 4, 118.7],
+[2023, "Week 6", "r", 4, 5, 136.94],
+[2023, "Week 5", "r", 4, 1, 166.42],
+[2023, "Week 4", "r", 4, 1, 138.86],
+[2023, "Week 3", "r", 4, 1, 190.78],
+[2023, "Week 2", "r", 4, 5, 79.02],
+[2023, "Week 1", "r", 4, 6, 112.04],
+[2023, "Week 18", "r", 5, 2, 154.96],
+[2023, "Week 17", "r", 5, 3, 147.2],
+[2023, "Week 16", "r", 5, 3, 116.4],
+[2023, "Week 15", "r", 5, 2, 165.76],
+[2023, "Week 14", "r", 5, 4, 111.84],
+[2023, "Week 13", "r", 5, 3, 134.16],
+[2023, "Week 12", "r", 5, 3, 136.76],
+[2023, "Week 11", "r", 5, 6, 107.96],
+[2023, "Week 10", "r", 5, 2, 142.04],
+[2023, "Week 9", "r", 5, 2, 122.7],
+[2023, "Week 8", "r", 5, 2, 156.58],
+[2023, "Week 7", "r", 5, 5, 103.2],
+[2023, "Week 6", "r", 5, 6, 126.0],
+[2023, "Week 5", "r", 5, 4, 129.52],
+[2023, "Week 4", "r", 5, 3, 128.14],
+[2023, "Week 3", "r", 5, 6, 113.26],
+[2023, "Week 2", "r", 5, 4, 92.74],
+[2023, "Week 1", "r", 5, 5, 112.54],
+[2024, "Championships", "c", 0, 3, 128.0],
+[2024, "Championships", "c", 1, 5, 103.28],
+[2024, "Championships", "c", 2, 6, 102.28],
+[2024, "Championships", "c", 3, 2, 129.6],
+[2024, "Championships", "c", 4, 1, 146.04],
+[2024, "Championships", "c", 5, 4, 103.9],
+[2024, "P2", "p", 0, 6, 115.0],
+[2024, "P1", "p", 0, 4, 83.2],
+[2024, "P2", "p", 1, 5, 122.42],
+[2024, "P1", "p", 1, 5, 71.18],
+[2024, "P2", "p", 2, 3, 132.28],
+[2024, "P1", "p", 2, 1, 113.88],
+[2024, "P2", "p", 3, 1, 142.56],
+[2024, "P1", "p", 3, 6, null],
+[2024, "P2", "p", 4, 2, 140.58],
+[2024, "P1", "p", 4, 3, 104.38],
+[2024, "P2", "p", 5, 4, 127.28],
+[2024, "P1", "p", 5, 2, 106.08],
+[2024, "Week 18", "r", 0, 3, 131.18],
+[2024, "Week 17", "r", 0, 4, 130.12],
+[2024, "Week 16", "r", 0, 2, 143.58],
+[2024, "Week 15", "r", 0, 2, 104.34],
+[2024, "Week 14", "r", 0, 3, 167.46],
+[2024, "Week 13", "r", 0, 1, 174.88],
+[2024, "Week 12", "r", 0, 6, 92.72],
+[2024, "Week 11", "r", 0, 3, 133.88],
+[2024, "Week 10", "r", 0, 4, 97.38],
+[2024, "Week 9", "r", 0, 4, 133.92],
+[2024, "Week 8", "r", 0, 4, 124.36],
+[2024, "Week 7", "r", 0, 6, 104.94],
+[2024, "Week 6", "r", 0, 5, 112.42],
+[2024, "Week 5", "r", 0, 2, 123.56],
+[2024, "Week 4", "r", 0, 4, 132.74],
+[2024, "Week 3", "r", 0, 1, 164.74],
+[2024, "Week 2", "r", 0, 6, 90.24],
+[2024, "Week 1", "r", 0, 5, 105.56],
+[2024, "Week 18", "r", 1, 1, 168.22],
+[2024, "Week 17", "r", 1, 6, 119.66],
+[2024, "Week 16", "r", 1, 1, 145.58],
+[2024, "Week 15", "r", 1, 3, 101.66],
+[2024, "Week 14", "r", 1, 5, 136.92],
+[2024, "Week 13", "r", 1, 3, 146.28],
+[2024, "Week 12", "r", 1, 4, 113.92],
+[2024, "Week 11", "r", 1, 1, 168.88],
+[2024, "Week 10", "r", 1, 5, 88.94],
+[2024, "Week 9", "r", 1, 3, 156.62],
+[2024, "Week 8", "r", 1, 1, 148.86],
+[2024, "Week 7", "r", 1, 1, 156.44],
+[2024, "Week 6", "r", 1, 6, 112.12],
+[2024, "Week 5", "r", 1, 5, 118.14],
+[2024, "Week 4", "r", 1, 1, 147.18],
+[2024, "Week 3", "r", 1, 4, 125.76],
+[2024, "Week 2", "r", 1, 5, 106.04],
+[2024, "Week 1", "r", 1, 4, 105.58],
+[2024, "Week 18", "r", 2, 5, 91.52],
+[2024, "Week 17", "r", 2, 1, 155.84],
+[2024, "Week 16", "r", 2, 6, 109.92],
+[2024, "Week 15", "r", 2, 4, 100.16],
+[2024, "Week 14", "r", 2, 1, 178.4],
+[2024, "Week 13", "r", 2, 2, 164.08],
+[2024, "Week 12", "r", 2, 1, 161.42],
+[2024, "Week 11", "r", 2, 4, 128.98],
+[2024, "Week 10", "r", 2, 1, 163.52],
+[2024, "Week 9", "r", 2, 2, 161.02],
+[2024, "Week 8", "r", 2, 6, 113.06],
+[2024, "Week 7", "r", 2, 4, 110.88],
+[2024, "Week 6", "r", 2, 1, 157.3],
+[2024, "Week 5", "r", 2, 1, 195.56],
+[2024, "Week 4", "r", 2, 2, 134.68],
+[2024, "Week 3", "r", 2, 5, 91.18],
+[2024, "Week 2", "r", 2, 1, 161.3],
+[2024, "Week 1", "r", 2, 6, 95.98],
+[2024, "Week 18", "r", 3, 4, 104.22],
+[2024, "Week 17", "r", 3, 5, 125.5],
+[2024, "Week 16", "r", 3, 3, 142.74],
+[2024, "Week 15", "r", 3, 6, 75.66],
+[2024, "Week 14", "r", 3, 4, 144.64],
+[2024, "Week 13", "r", 3, 5, 120.08],
+[2024, "Week 12", "r", 3, 5, 96.52],
+[2024, "Week 11", "r", 3, 6, 74.76],
+[2024, "Week 10", "r", 3, 2, 128.32],
+[2024, "Week 9", "r", 3, 1, 171.0],
+[2024, "Week 8", "r", 3, 2, 127.84],
+[2024, "Week 7", "r", 3, 2, 131.28],
+[2024, "Week 6", "r", 3, 4, 128.92],
+[2024, "Week 5", "r", 3, 3, 121.84],
+[2024, "Week 4", "r", 3, 3, 132.82],
+[2024, "Week 3", "r", 3, 2, 142.26],
+[2024, "Week 2", "r", 3, 4, 106.44],
+[2024, "Week 1", "r", 3, 2, 124.58],
+[2024, "Week 18", "r", 4, 6, 59.88],
+[2024, "Week 17", "r", 4, 3, 140.06],
+[2024, "Week 16", "r", 4, 4, 142.14],
+[2024, "Week 15", "r", 4, 1, 143.14],
+[2024, "Week 14", "r", 4, 6, 126.68],
+[2024, "Week 13", "r", 4, 6, 119.0],
+[2024, "Week 12", "r", 4, 3, 120.32],
+[2024, "Week 11", "r", 4, 5, 94.12],
+[2024, "Week 10", "r", 4, 6, 85.5],
+[2024, "Week 9", "r", 4, 5, 128.68],
+[2024, "Week 8", "r", 4, 3, 125.48],
+[2024, "Week 7", "r", 4, 5, 109.3],
+[2024, "Week 6", "r", 4, 3, 135.72],
+[2024, "Week 5", "r", 4, 4, 119.16],
+[2024, "Week 4", "r", 4, 5, 118.42],
+[2024, "Week 3", "r", 4, 6, 84.46],
+[2024, "Week 2", "r", 4, 2, 117.2],
+[2024, "Week 1", "r", 4, 1, 131.86],
+[2024, "Week 18", "r", 5, 2, 151.54],
+[2024, "Week 17", "r", 5, 2, 142.34],
+[2024, "Week 16", "r", 5, 5, 116.98],
+[2024, "Week 15", "r", 5, 5, 87.16],
+[2024, "Week 14", "r", 5, 2, 170.66],
+[2024, "Week 13", "r", 5, 4, 134.28],
+[2024, "Week 12", "r", 5, 2, 152.42],
+[2024, "Week 11", "r", 5, 2, 153.88],
+[2024, "Week 10", "r", 5, 3, 110.62],
+[2024, "Week 9", "r", 5, 6, 119.26],
+[2024, "Week 8", "r", 5, 5, 123.04],
+[2024, "Week 7", "r", 5, 3, 114.18],
+[2024, "Week 6", "r", 5, 2, 138.2],
+[2024, "Week 5", "r", 5, 6, 111.24],
+[2024, "Week 4", "r", 5, 6, 101.28],
+[2024, "Week 3", "r", 5, 3, 128.46],
+[2024, "Week 2", "r", 5, 3, 115.14],
+[2024, "Week 1", "r", 5, 3, 118.24],
+[2025, "Championships", "c", 0, 2, 159.42],
+[2025, "Championships", "c", 1, 1, 166.76],
+[2025, "Championships", "c", 2, 3, 154.84],
+[2025, "Championships", "c", 3, 5, 140.14],
+[2025, "Championships", "c", 4, 4, 143.54],
+[2025, "Championships", "c", 5, 6, 136.64],
+[2025, "P2", "p", 0, 4, 74.36],
+[2025, "P1", "p", 0, 6, 89.29],
+[2025, "P2", "p", 1, 3, 94.86],
+[2025, "P1", "p", 1, 1, 174.22],
+[2025, "P2", "p", 2, 1, 103.68],
+[2025, "P1", "p", 2, 5, 142.78],
+[2025, "P2", "p", 3, 6, 64.62],
+[2025, "P1", "p", 3, 2, 158.24],
+[2025, "P2", "p", 4, 5, 72.36],
+[2025, "P1", "p", 4, 4, 146.02],
+[2025, "P2", "p", 5, 2, 97.22],
+[2025, "P1", "p", 5, 3, 156.46],
+[2025, "Week 18", "r", 0, 4, 124.36],
+[2025, "Week 17", "r", 0, 6, 79.34],
+[2025, "Week 16", "r", 0, 3, 129.28],
+[2025, "Week 15", "r", 0, 5, 116.58],
+[2025, "Week 14", "r", 0, 6, 102.74],
+[2025, "Week 13", "r", 0, 3, 89.46],
+[2025, "Week 12", "r", 0, 6, 106.94],
+[2025, "Week 11", "r", 0, 4, 154.04],
+[2025, "Week 10", "r", 0, 6, 136.08],
+[2025, "Week 9", "r", 0, 5, 116.34],
+[2025, "Week 8", "r", 0, 1, 147.8],
+[2025, "Week 7", "r", 0, 6, 112.24],
+[2025, "Week 6", "r", 0, 6, 66.24],
+[2025, "Week 5", "r", 0, 1, 173.46],
+[2025, "Week 4", "r", 0, 6, 130.98],
+[2025, "Week 3", "r", 0, 5, 127.06],
+[2025, "Week 2", "r", 0, 5, 119.08],
+[2025, "Week 1", "r", 0, 5, 120.22],
+[2025, "Week 18", "r", 1, 2, 131.5],
+[2025, "Week 17", "r", 1, 2, 125.88],
+[2025, "Week 16", "r", 1, 4, 128.0],
+[2025, "Week 15", "r", 1, 2, 140.64],
+[2025, "Week 14", "r", 1, 4, 147.86],
+[2025, "Week 13", "r", 1, 5, 83.1],
+[2025, "Week 12", "r", 1, 2, 213.48],
+[2025, "Week 11", "r", 1, 3, 157.84],
+[2025, "Week 10", "r", 1, 3, 144.58],
+[2025, "Week 9", "r", 1, 1, 182.94],
+[2025, "Week 8", "r", 1, 6, 121.72],
+[2025, "Week 7", "r", 1, 1, 195.06],
+[2025, "Week 6", "r", 1, 2, 143.14],
+[2025, "Week 5", "r", 1, 6, 133.12],
+[2025, "Week 4", "r", 1, 2, 191.84],
+[2025, "Week 3", "r", 1, 3, 138.18],
+[2025, "Week 2", "r", 1, 4, 135.98],
+[2025, "Week 1", "r", 1, 3, 140.16],
+[2025, "Week 18", "r", 2, 1, 133.38],
+[2025, "Week 17", "r", 2, 1, 165.32],
+[2025, "Week 16", "r", 2, 6, null],
+[2025, "Week 15", "r", 2, 4, 121.34],
+[2025, "Week 14", "r", 2, 1, 169.08],
+[2025, "Week 13", "r", 2, 1, 118.18],
+[2025, "Week 12", "r", 2, 3, 187.68],
+[2025, "Week 11", "r", 2, 1, 164.58],
+[2025, "Week 10", "r", 2, 4, 141.12],
+[2025, "Week 9", "r", 2, 4, 138.96],
+[2025, "Week 8", "r", 2, 4, 128.08],
+[2025, "Week 7", "r", 2, 3, 173.44],
+[2025, "Week 6", "r", 2, 1, 152.4],
+[2025, "Week 5", "r", 2, 2, 150.72],
+[2025, "Week 4", "r", 2, 1, 198.42],
+[2025, "Week 3", "r", 2, 1, 158.02],
+[2025, "Week 2", "r", 2, 3, 137.2],
+[2025, "Week 1", "r", 2, 6, 115.72],
+[2025, "Week 18", "r", 3, 5, 108.04],
+[2025, "Week 17", "r", 3, 3, 123.28],
+[2025, "Week 16", "r", 3, 5, 106.5],
+[2025, "Week 15", "r", 3, 3, 128.7],
+[2025, "Week 14", "r", 3, 2, 156.43],
+[2025, "Week 13", "r", 3, 4, 84.34],
+[2025, "Week 12", "r", 3, 4, 183.18],
+[2025, "Week 11", "r", 3, 6, 121.7],
+[2025, "Week 10", "r", 3, 5, 138.14],
+[2025, "Week 9", "r", 3, 3, 141.44],
+[2025, "Week 8", "r", 3, 2, 129.52],
+[2025, "Week 7", "r", 3, 2, 185.46],
+[2025, "Week 6", "r", 3, 3, 126.44],
+[2025, "Week 5", "r", 3, 4, 148.44],
+[2025, "Week 4", "r", 3, 3, 169.82],
+[2025, "Week 3", "r", 3, 4, 129.02],
+[2025, "Week 2", "r", 3, 1, 157.7],
+[2025, "Week 1", "r", 3, 2, 142.12],
+[2025, "Week 18", "r", 4, 6, 72.84],
+[2025, "Week 17", "r", 4, 4, 122.2],
+[2025, "Week 16", "r", 4, 1, 163.72],
+[2025, "Week 15", "r", 4, 1, 152.64],
+[2025, "Week 14", "r", 4, 3, 148.44],
+[2025, "Week 13", "r", 4, 2, 90.84],
+[2025, "Week 12", "r", 4, 1, 218.78],
+[2025, "Week 11", "r", 4, 2, 159.98],
+[2025, "Week 10", "r", 4, 2, 162.18],
+[2025, "Week 9", "r", 4, 6, 105.5],
+[2025, "Week 8", "r", 4, 5, 126.46],
+[2025, "Week 7", "r", 4, 4, 127.28],
+[2025, "Week 6", "r", 4, 4, 118.86],
+[2025, "Week 5", "r", 4, 5, 136.12],
+[2025, "Week 4", "r", 4, 4, 136.8],
+[2025, "Week 3", "r", 4, 6, 120.82],
+[2025, "Week 2", "r", 4, 6, 112.68],
+[2025, "Week 1", "r", 4, 4, 138.92],
+[2025, "Week 18", "r", 5, 3, 124.36],
+[2025, "Week 17", "r", 5, 5, 108.04],
+[2025, "Week 16", "r", 5, 2, 139.2],
+[2025, "Week 15", "r", 5, 6, 104.94],
+[2025, "Week 14", "r", 5, 5, 140.34],
+[2025, "Week 13", "r", 5, 6, null],
+[2025, "Week 12", "r", 5, 5, 181.72],
+[2025, "Week 11", "r", 5, 5, 131.02],
+[2025, "Week 10", "r", 5, 1, 188.88],
+[2025, "Week 9", "r", 5, 2, 179.14],
+[2025, "Week 8", "r", 5, 3, 129.06],
+[2025, "Week 7", "r", 5, 5, 118.74],
+[2025, "Week 6", "r", 5, 5, 118.86],
+[2025, "Week 5", "r", 5, 3, 149.1],
+[2025, "Week 4", "r", 5, 4, 145.24],
+[2025, "Week 3", "r", 5, 2, 152.88],
+[2025, "Week 2", "r", 5, 2, 144.68],
+[2025, "Week 1", "r", 5, 1, 143.32]
+];
+const SERIES=["--s1","--s2","--s3","--s4","--s5","--s6"];
+
+/* ============ MODEL (rebuilds when data changes) ============ */
+let R=[], SEASONS=[], ALL_SEASONS=[], LATEST=null, SEASON=null;
+function ingest(rows){
+  R = rows.map(a=>({
+    season:+a[0], week:String(a[1]), kind:a[2],
+    p: (typeof a[3]==='number')?a[3]:PLAYERS.indexOf(a[3]),
+    place:(a[4]==null||a[4]==='')?null:+a[4],
+    score:(a[5]==null||a[5]==='')?null:+a[5]
+  })).filter(x=>x.p>=0);
+  SEASONS=[...new Set(R.map(x=>x.season))].sort((a,b)=>a-b);         // seasons WITH data
+  LATEST=SEASONS.length?SEASONS[SEASONS.length-1]:CURRENT_SEASON;    // last completed season
+  ALL_SEASONS=[...new Set([...SEASONS,CURRENT_SEASON])].sort((a,b)=>a-b); // + current (may be empty)
+  if(SEASON==null || !ALL_SEASONS.includes(SEASON)) SEASON=CURRENT_SEASON;
+}
+const N=PLAYERS.length;
+function champOf(season){const c=R.find(x=>x.season===season&&x.kind==='c'&&x.place===1);return c?c.p:null;}
+function agg(rows){
+  const out=PLAYERS.map((_,i)=>({p:i,gp:0,places:[0,0,0,0,0,0,0],sumPlace:0,points:0,hi:null,lo:null}));
+  rows.forEach(x=>{const o=out[x.p];
+    if(x.place){o.gp++;o.places[x.place]++;o.sumPlace+=x.place;}
+    if(x.score!=null){o.points+=x.score;o.hi=o.hi==null?x.score:Math.max(o.hi,x.score);o.lo=o.lo==null?x.score:Math.min(o.lo,x.score);}});
+  out.forEach(o=>{o.avg=o.gp?o.sumPlace/o.gp:null;o.points=Math.round(o.points*100)/100;});
+  return out;
+}
+function seasonStandings(season){const a=agg(R.filter(x=>x.season===season));a.sort((x,y)=>(x.avg??9)-(y.avg??9)||y.places[1]-x.places[1]||y.points-x.points);return a;}
+const f1=v=>v==null?"—":Math.round(v*10)/10;
+const f2=v=>v==null?"—":(Math.round(v*100)/100);
+const nm=i=>PLAYERS[i];
+const dot=i=>`<span class="dot" style="background:var(${SERIES[i]})"></span>`;
+const el=id=>document.getElementById(id);
+const cssv=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+function placeBG(place){if(!place)return "var(--surface-2)";const t=(place-1)/5;
+  if(t<0.5){const k=Math.round((0.5-t)*2*62);return `color-mix(in srgb, var(--good) ${k}%, var(--surface))`;}
+  const k=Math.round((t-0.5)*2*62);return `color-mix(in srgb, var(--bad) ${k}%, var(--surface))`;}
+function ord(n){return n+(["th","st","nd","rd","th","th","th"][n]||"th");}
+
+/* ============ CHARTS ============ */
+function stackedFinish(a){
+  const W=560,rowH=34,padL=96,padR=54,H=a.length*rowH+10;
+  const totals=a.map(o=>o.places.slice(1).reduce((s,v)=>s+v,0));const max=Math.max(...totals,1);
+  let s=`<svg class="svgc" viewBox="0 0 ${W} ${H}" role="img">`;
+  a.forEach((o,i)=>{const y=i*rowH+8;let x=padL;
+    s+=`<text class="axislbl" x="${padL-10}" y="${y+3}" text-anchor="end" style="fill:var(--ink-2);font-weight:600">${nm(o.p)}</text>`;
+    for(let pl=1;pl<=6;pl++){const w=(o.places[pl]/max)*(W-padL-padR);
+      if(w>0)s+=`<rect x="${x+1}" y="${y-8}" width="${Math.max(0,w-2)}" height="16" fill="${placeBG(pl)}" stroke="var(--surface)" stroke-width="1"><title>${nm(o.p)} — ${o.places[pl]}× ${ord(pl)}</title></rect>`;
+      x+=w;}
+    s+=`<text class="vallbl" x="${x+8}" y="${y+3}">${o.places[1]}×1st</text>`;});
+  return s+`</svg>`;
+}
+function barChart(rows,{fmt=v=>v}={}){
+  const W=560,rowH=32,padL=96,padR=70,H=rows.length*rowH+8;const max=Math.max(...rows.map(r=>r.value),1);
+  let s=`<svg class="svgc" viewBox="0 0 ${W} ${H}" role="img">`;
+  rows.forEach((r,i)=>{const y=i*rowH+8,w=Math.max(2,(r.value/max)*(W-padL-padR));
+    s+=`<text class="axislbl" x="${padL-10}" y="${y+3}" text-anchor="end" style="fill:var(--ink-2);font-weight:600">${r.label}</text>`;
+    s+=`<rect x="${padL}" y="${y-8}" width="${w}" height="16" rx="4" fill="${cssv(r.color||'--s1')}"/>`;
+    s+=`<text class="vallbl" x="${padL+w+8}" y="${y+3}">${fmt(r.value)}</text>`;});
+  return s+`</svg>`;
+}
+
+/* ============ VIEWS ============ */
+function ordinalWeeks(season){
+  const labels=[...new Set(R.filter(x=>x.season===season).map(x=>x.week))];
+  const reg=labels.filter(l=>/^week/i.test(l)).sort((a,b)=>parseInt(a.replace(/\D/g,''))-parseInt(b.replace(/\D/g,'')));
+  const po=labels.filter(l=>!/^week/i.test(l));const order=l=>({p1:1,p2:2,champ:3,championships:3,cs:3}[l.toLowerCase()]??9);
+  po.sort((a,b)=>order(a)-order(b));return reg.concat(po);
+}
+const CONTESTS=[
+  ["Most Firsts","most weekly wins",a=>a.slice().sort((x,y)=>y.places[1]-x.places[1]),o=>o.places[1]+"× 1st place"],
+  ["Best Avg Finish","lowest average place",a=>a.slice().sort((x,y)=>(x.avg??9)-(y.avg??9)),o=>f1(o.avg)+" avg finish"],
+  ["Highest Single Score","best single week",a=>a.slice().sort((x,y)=>(y.hi??0)-(x.hi??0)),o=>f2(o.hi)+" pts"],
+  ["Most Points","highest season total",a=>a.slice().sort((x,y)=>y.points-x.points),o=>f2(o.points)+" pts"],
+  ["Most Sixths 🦨","skunk — most last-place weeks",a=>a.slice().sort((x,y)=>y.places[6]-x.places[6]),o=>o.places[6]+"× 6th place"],
+  ["Fewest Points 🦨","skunk — lowest season total",a=>a.slice().sort((x,y)=>x.points-y.points),o=>f2(o.points)+" pts"],
+];
+const CONTEST_SHORT={"Most Firsts":"Most 1sts","Best Avg Finish":"Best Avg","Highest Single Score":"High Score","Most Points":"Most Pts","Most Sixths 🦨":"Most 6ths 🦨","Fewest Points 🦨":"Fewest Pts 🦨"};
+function contestWinners(season){                 // {contestName: winnerIdx} or null
+  const a=seasonStandings(season);
+  if(!a.length||!a[0].gp) return null;
+  const res={};CONTESTS.forEach(([name,,sorter])=>{res[name]=sorter(a)[0].p;});return res;
+}
+function careerContestWins(){                     // positive contests only (skunks excluded)
+  const wins=PLAYERS.map(()=>0);
+  const positive=CONTESTS.filter(c=>c[0].indexOf("🦨")<0).map(c=>c[0]);
+  SEASONS.forEach(s=>{const w=contestWinners(s);if(w)positive.forEach(n=>wins[w[n]]++);});
+  return wins;
+}
+const HL_WIN="background:color-mix(in srgb,var(--gold) 24%,transparent);color:var(--gold);font-weight:800;border-radius:6px;padding:3px 8px";
+const HL_SKUNK="background:#6d4c2f;color:#fff;font-weight:800;border-radius:6px;padding:3px 8px";
+const chip=(v,style)=>style?`<span style="${style}">${v}</span>`:`${v}`;
+
+/* ---- Payout logic ----
+   Each player pays $30 to the winner of the 4 positive contests.
+   The "winner" of each of the 2 skunk contests pays $30 to every other player. */
+const PAYOUT_UNIT=30;
+function payoutData(season){
+  const a=seasonStandings(season);
+  const participants=a.filter(o=>o.gp>0).map(o=>o.p);
+  const N=participants.length, u=PAYOUT_UNIT;
+  const pos=CONTESTS.filter(c=>c[0].indexOf("🦨")<0);   // 4 positive
+  const sk =CONTESTS.filter(c=>c[0].indexOf("🦨")>=0);   // 2 skunk
+  const posWin=pos.map(c=>c[2](a)[0].p);
+  const skLose=sk.map(c=>c[2](a)[0].p);
+  const rows=participants.map(p=>{
+    const posWon=posWin.filter(w=>w===p).length;
+    const skOf =skLose.filter(l=>l===p).length;
+    const received=posWon*u*(N-1) + (sk.length-skOf)*u;   // from contests won + from each skunk you avoided
+    const paid=(pos.length-posWon)*u + skOf*u*(N-1);       // to winners you lost to + your own skunk penalties
+    return {p,posWon,skOf,received,paid,net:received-paid,
+            wonNames:pos.filter((c,i)=>posWin[i]===p).map(c=>c[0]),
+            skNames:sk.filter((c,i)=>skLose[i]===p).map(c=>c[0])};
+  });
+  return {rows,N,u};
+}
+function settleUp(rows){                                   // greedy fewest-transactions settlement
+  const cr=[],db=[];
+  rows.forEach(o=>{const v=Math.round(o.net); if(v>0)cr.push({p:o.p,amt:v}); else if(v<0)db.push({p:o.p,amt:-v});});
+  cr.sort((x,y)=>y.amt-x.amt); db.sort((x,y)=>y.amt-x.amt);
+  const tx=[];let i=0,j=0;
+  while(i<cr.length&&j<db.length){const pay=Math.min(cr[i].amt,db[j].amt);
+    if(pay>0)tx.push({from:db[j].p,to:cr[i].p,amt:pay});
+    cr[i].amt-=pay; db[j].amt-=pay;
+    if(cr[i].amt===0)i++; if(db[j].amt===0)j++;}
+  return tx;
+}
+function payoutSection(season){
+  const d=payoutData(season);
+  const dollars=v=>'$'+v.toLocaleString();
+  const net=v=>(v<0?'−$':'+$')+Math.abs(v).toLocaleString();
+  let h=`<h2 class="section">💰 Payout Tracker <span class="tag">$${d.u} per contest · ${d.N} players</span></h2>`;
+  h+=`<div class="notice">Everyone pays <b>$30</b> to each winner of <b>Most Firsts</b>, <b>Best Avg</b>, <b>Highest Single</b>, and <b>Most Points</b>. The <b>🦨 Most Sixths</b> and <b>🦨 Fewest Points</b> loser each owes <b>$30 to every other player</b>. Net is what each player collects (+) or owes (−) for the season.</div>`;
+  h+=`<div class="card"><table><thead><tr><th>Player</th><th>Contests Won</th><th>🦨 Skunks</th><th>Collects</th><th>Pays</th><th>Net</th></tr></thead><tbody>`;
+  d.rows.slice().sort((x,y)=>y.net-x.net).forEach(o=>{
+    h+=`<tr><td class="who">${dot(o.p)}${nm(o.p)}</td>
+      <td class="tnum" style="color:var(--gold)">${o.posWon||'—'}</td>
+      <td class="tnum" style="color:var(--bad)">${o.skOf||'—'}</td>
+      <td class="tnum">${dollars(o.received)}</td><td class="tnum">${dollars(o.paid)}</td>
+      <td class="tnum" style="font-weight:800;color:${o.net>=0?'var(--good)':'var(--bad)'}">${net(o.net)}</td></tr>`;});
+  h+=`</tbody></table></div>`;
+  const tx=settleUp(d.rows);
+  h+=`<div style="margin-top:12px"><button class="btn" onclick="togglePayout()"><span id="payoutCaret">▸</span> &nbsp;Simplified settle-up — fewest transactions (${tx.length})</button></div>`;
+  h+=`<div id="payoutDrill" style="display:none;margin-top:12px"><div class="card">`;
+  if(!tx.length){h+=`<div style="color:var(--muted)">Everyone's square — no payments needed.</div>`;}
+  else{h+=`<div class="hint" style="margin:0 0 8px">Just these ${tx.length} payments settle every balance:</div>`;
+    tx.forEach(t=>{h+=`<div style="display:flex;align-items:center;gap:10px;padding:9px 2px;border-bottom:1px solid var(--border)">
+      <span class="who">${dot(t.from)}${nm(t.from)}</span><span style="color:var(--muted)">pays</span>
+      <span class="who">${dot(t.to)}${nm(t.to)}</span>
+      <span class="tnum" style="margin-left:auto;font-weight:800;color:var(--good)">$${t.amt.toLocaleString()}</span></div>`;});}
+  h+=`</div></div>`;
+  return h;
+}
+function placeLegend(){return `<div class="legend">`+[1,2,3,4,5,6].map(pl=>`<span class="li"><span class="sw" style="background:${placeBG(pl)}"></span>${ord(pl)}</span>`).join("")+`</div>`;}
+
+function renderSeason(){
+  const rows=R.filter(x=>x.season===SEASON);
+  if(!rows.length){
+    el("view-season").innerHTML=`<div class="champ-banner"><div class="cup">🦨</div><div><div class="who">${SEASON} — season not started</div><div class="sub">No results entered yet. Head to <b>＋ Enter Results</b> to post Week 1, and the standings, awards and grids fill in automatically.</div></div></div>`;
+    return;
+  }
+  const a=seasonStandings(SEASON);let h="";
+  // winning values per contest column (ties highlight all matches)
+  const withGp=a.filter(o=>o.gp);
+  const avgWin=Math.min(...withGp.map(o=>o.avg));
+  const firstsWin=Math.max(...a.map(o=>o.places[1]));
+  const sixthsWin=Math.max(...a.map(o=>o.places[6]));
+  const ptsMax=Math.max(...a.map(o=>o.points));
+  const ptsMin=Math.min(...withGp.map(o=>o.points));
+  const hiWin=Math.max(...a.map(o=>o.hi??-1));
+  const loMin=Math.min(...withGp.map(o=>o.lo??1e9));
+  h+=`<h2 class="section">${SEASON} Standings <span class="tag">${a[0]?a[0].gp:0} weeks played</span></h2>`;
+  h+=`<div class="card"><table><thead><tr><th>Player</th><th>Avg Fin</th><th>1st</th><th>2nd</th><th>3rd</th><th>4th</th><th>5th</th><th>6th</th><th>Points</th><th>High</th><th>Low</th></tr></thead><tbody>`;
+  a.forEach((o,i)=>{h+=`<tr><td class="who"><span class="rank tnum">${i+1}</span>${dot(o.p)}${nm(o.p)}</td>
+    <td class="tnum">${chip(f1(o.avg), o.avg===avgWin?HL_WIN:"")}</td>
+    ${[1,2,3,4,5,6].map(pl=>{const v=o.places[pl]||'·';
+       const s=(pl===1&&firstsWin>0&&o.places[1]===firstsWin)?HL_WIN:(pl===6&&sixthsWin>0&&o.places[6]===sixthsWin)?HL_SKUNK:"";
+       const color=pl===1?'var(--gold)':pl===6?'var(--bad)':'var(--ink-2)';
+       return `<td class="tnum" style="color:${color}">${chip(v,s)}</td>`;}).join('')}
+    <td class="tnum">${chip(f2(o.points), o.points===ptsMax?HL_WIN:"")}</td>
+    <td class="tnum">${chip(f2(o.hi), o.hi===hiWin?HL_WIN:"")}</td>
+    <td class="tnum">${chip(f2(o.lo), o.lo===loMin?HL_SKUNK:"")}</td></tr>`;});
+  h+=`</tbody></table></div><p class="hint"><span style="${HL_WIN}">gold</span> = contest winner · <span style="${HL_SKUNK}">brown</span> = skunk (worst single & most sixths). Each column crowns its own winner.</p>`;
+  // Season awards — a winner per individual contest
+  h+=`<h2 class="section">Season Awards — Contest Winners</h2><div class="grid g3">`;
+  CONTESTS.forEach(([name,sub,sorter,fmt])=>{const w=sorter(a)[0];const sk=name.indexOf("🦨")>=0;
+    h+=`<div class="tile"><div class="k">${name}</div><div class="v" style="font-size:19px">${sk?'🦨':'🏆'} ${dot(w.p)} ${nm(w.p)}</div><div class="s">${fmt(w)} · <span style="color:var(--muted)">${sub}</span></div></div>`;});
+  h+=`</div>`;
+  h+=payoutSection(SEASON);
+  h+=`<div class="grid g2" style="margin-top:16px">
+    <div><h2 class="section">Finish Distribution</h2><div class="card">${stackedFinish(a)}${placeLegend()}</div></div>
+    <div><h2 class="section">Total Points</h2><div class="card">${barChart(a.slice().sort((x,y)=>y.points-x.points).map(o=>({label:nm(o.p),value:f2(o.points),color:SERIES[o.p]})),{fmt:f2})}</div></div></div>`;
+  el("view-season").innerHTML=h;
+}
+function sheetWeeks(season){
+  const labels=[...new Set(R.filter(x=>x.season===season).map(x=>x.week))];
+  const rank=l=>{const lo=l.toLowerCase();
+    if(/^week/.test(lo)) return 1000-parseInt(l.replace(/\D/g,''));      // higher weeks first
+    return ({championships:0,champ:0,cs:0,p2:1,p1:2}[lo])??500;};        // playoffs on top
+  return labels.sort((a,b)=>rank(a)-rank(b));
+}
+function renderResults(){
+  const rows=R.filter(x=>x.season===SEASON);
+  if(!rows.length){el("view-results").innerHTML=`<div class="card">No weekly results for ${SEASON} yet — add them in <b>＋ Enter Results</b>.</div>`;return;}
+  const weeks=sheetWeeks(SEASON);const map={};rows.forEach(x=>{map[x.week+"|"+x.p]=x;});
+  const a=agg(rows);
+  let h=`<h2 class="section">${SEASON} Weekly Results <span class="tag">place · score · like the tracker</span></h2>`;
+  h+=`<div class="card wk"><table><thead><tr><th>Week</th>${PLAYERS.map((p,i)=>`<th>${dot(i)} ${p}</th>`).join("")}</tr></thead><tbody>`;
+  weeks.forEach(wk=>{const isP=!/^week/i.test(wk);
+    const lbl=isP?({p1:"Playoff R1",p2:"Playoff R2",champ:"🏆 Championship",championships:"🏆 Championship",cs:"🏆 Championship"}[wk.toLowerCase()]||wk):wk;
+    h+=`<tr><td class="wklbl">${lbl}</td>`;
+    PLAYERS.forEach((_,i)=>{const c=map[wk+"|"+i];
+      if(!c||c.place==null){h+=`<td class="pl" style="background:var(--surface-2)"><div class="cellwrap"><span class="sc" style="color:var(--muted)">—</span></div></td>`;return;}
+      h+=`<td class="pl" style="background:${placeBG(c.place)}"><div class="cellwrap"><span class="p">${c.place===1?'🥇':''}${c.place}</span><span class="sc">${c.score==null?'--':f2(c.score)}</span></div></td>`;});
+    h+=`</tr>`;});
+  // footer: season average finish per player (like row 24 in the tracker)
+  h+=`<tr><td class="wklbl" style="font-weight:800">Avg Finish</td>${PLAYERS.map((_,i)=>{const o=a[i];return `<td class="pl" style="background:var(--surface-2)"><div class="cellwrap"><span class="p" style="color:var(--ink-2)">${f1(o.avg)}</span></div></td>`;}).join("")}</tr>`;
+  h+=`</tbody></table></div><p class="hint">Playoffs on top, then Week ${Math.max(...rows.filter(x=>/^week/i.test(x.week)).map(x=>parseInt(x.week.replace(/\D/g,''))||0))} down to Week 1 — same layout as your spreadsheet. Green = better finish, red = worse; 🥇 = weekly win; “--” = missed slate.</p>`;
+  el("view-results").innerHTML=h;
+}
+function careerAgg(){const a=agg(R);a.forEach(o=>{o.titles=0;o.seasons=new Set();});
+  SEASONS.forEach(s=>{const c=champOf(s);if(c!=null)a[c].titles++;});
+  R.forEach(x=>a[x.p].seasons.add(x.season));a.forEach(o=>o.ns=o.seasons.size);return a;}
+function renderHistory(){
+  // Contest winners by season
+  let h=`<h2 class="section">Contest Winners by Season</h2><div class="card wk"><table><thead><tr><th>Season</th>${CONTESTS.map(c=>`<th style="text-align:center">${CONTEST_SHORT[c[0]]||c[0]}</th>`).join("")}</tr></thead><tbody>`;
+  SEASONS.slice().sort((a,b)=>b-a).forEach(s=>{const w=contestWinners(s);if(!w)return;
+    h+=`<tr><td class="wklbl">${s}</td>${CONTESTS.map(c=>{const p=w[c[0]];return `<td style="text-align:center"><span class="who" style="justify-content:center">${dot(p)}${nm(p)}</span></td>`;}).join("")}</tr>`;});
+  h+=`</tbody></table></div>`;
+  // All-time leaderboard, ranked by contest wins
+  const cw=careerContestWins();
+  const a=careerAgg();a.forEach(o=>o.cw=cw[o.p]);
+  a.sort((x,y)=>y.cw-x.cw||(x.avg??9)-(y.avg??9));
+  h+=`<h2 class="section">All-Time Leaderboard</h2><div class="card"><table><thead><tr><th>Player</th><th>Contest Wins</th><th>Avg Fin</th><th>1sts</th><th>6ths 🦨</th><th>Total Pts</th><th>Seasons</th></tr></thead><tbody>`;
+  a.forEach((o,i)=>{h+=`<tr><td class="who"><span class="rank tnum">${i+1}</span>${dot(o.p)}${nm(o.p)}</td>
+    <td class="tnum" style="font-weight:800;color:var(--gold)">${o.cw}</td><td class="tnum" style="font-weight:700">${f1(o.avg)}</td>
+    <td class="tnum" style="color:var(--gold)">${o.places[1]}</td><td class="tnum" style="color:var(--bad)">${o.places[6]}</td>
+    <td class="tnum">${o.points.toLocaleString()}</td><td class="tnum">${o.ns}</td></tr>`;});
+  h+=`</tbody></table></div>`;
+  const bars=a.slice().sort((x,y)=>y.cw-x.cw).map(o=>({label:nm(o.p),value:o.cw,color:SERIES[o.p]}));
+  h+=`<h2 class="section">All-Time Contest Wins</h2><div class="card">${barChart(bars,{fmt:v=>v})}</div>`;
+  el("view-history").innerHTML=h;
+}
+function wkName(w){return /^week/i.test(w)?w:({p1:"Playoff R1",p2:"Playoff R2"}[w.toLowerCase()]||"Championship");}
+function renderRecords(){
+  const scored=R.filter(x=>x.score!=null);
+  if(!scored.length){el("view-records").innerHTML="<div class='card'>No scored results yet.</div>";return;}
+  const hi=scored.reduce((m,x)=>x.score>m.score?x:m);const lo=scored.reduce((m,x)=>x.score<m.score?x:m);
+  let mostF={v:-1},mostS={v:-1},bestAvg={v:9},mostP={v:-1};
+  SEASONS.forEach(s=>seasonStandings(s).forEach(o=>{
+    if(o.places[1]>mostF.v)mostF={v:o.places[1],p:o.p,s};
+    if(o.places[6]>mostS.v)mostS={v:o.places[6],p:o.p,s};
+    if(o.avg!=null&&o.avg<bestAvg.v)bestAvg={v:o.avg,p:o.p,s};
+    if(o.points>mostP.v)mostP={v:o.points,p:o.p,s};}));
+  const cw=careerContestWins();let mcw={v:-1};PLAYERS.forEach((_,p)=>{if(cw[p]>mcw.v)mcw={v:cw[p],p};});
+  const tile=(k,v,s)=>`<div class="tile"><div class="k">${k}</div><div class="v">${v}</div><div class="s">${s}</div></div>`;
+  let h=`<h2 class="section">Record Book — All Time</h2><div class="grid g3">`;
+  h+=tile("Highest single score",`${f2(hi.score)}`,`${nm(hi.p)} · ${hi.season} ${wkName(hi.week)}`);
+  h+=tile("Lowest single score",`${f2(lo.score)}`,`${nm(lo.p)} · ${lo.season} ${wkName(lo.week)}`);
+  h+=tile("Most 1sts, one season",`${mostF.v}`,`${nm(mostF.p)} · ${mostF.s}`);
+  h+=tile("Most skunks (6ths), one season",`${mostS.v}`,`${nm(mostS.p)} · ${mostS.s}`);
+  h+=tile("Best season avg finish",`${f1(bestAvg.v)}`,`${nm(bestAvg.p)} · ${bestAvg.s}`);
+  h+=tile("Most points, one season",`${f2(mostP.v)}`,`${nm(mostP.p)} · ${mostP.s}`);
+  h+=tile("Most contest wins (all-time)",`${mcw.v} 🏆`,`${nm(mcw.p)}`);
+  h+=`</div>`;el("view-records").innerHTML=h;
+}
+function renderSkunks(){
+  const scored=R.filter(x=>x.score!=null).slice().sort((a,b)=>a.score-b.score);
+  if(!scored.length){el("view-skunks").innerHTML=`<div class="card">No scores yet.</div>`;return;}
+  const TOP=Math.min(15,scored.length);
+  const list=scored.slice(0,TOP);
+  let h=`<h2 class="section">🦨 Hall of Shame — Lowest Single Scores, All Time</h2>`;
+  h+=`<div class="card"><table><thead><tr><th>Rank</th><th>Degenerate</th><th>Score</th><th>Season</th><th>When</th></tr></thead><tbody>`;
+  list.forEach((x,i)=>{h+=`<tr><td class="tnum">${i+1}</td><td class="who">${dot(x.p)}${nm(x.p)}</td>
+    <td class="tnum" style="font-weight:800;color:var(--bad)">${f2(x.score)}</td>
+    <td class="tnum">${x.season}</td><td style="text-align:left;color:var(--ink-2)">${wkName(x.week)}</td></tr>`;});
+  h+=`</tbody></table></div>`;
+  // chart 1: the lowest 15 scores
+  const bars1=list.map(x=>({label:`${nm(x.p).split(" ")[0]} '${String(x.season).slice(2)}`,value:f2(x.score),color:"--bad"}));
+  h+=`<div class="grid g2" style="margin-top:16px">
+    <div><h2 class="section">The 15 Lowest Scores</h2><div class="card">${barChart(bars1,{fmt:f2})}</div></div>`;
+  // chart 2: all-time last-place (6th) finishes by player
+  const car=careerAgg();
+  const bars2=car.slice().sort((x,y)=>y.places[6]-x.places[6]).map(o=>({label:nm(o.p),value:o.places[6],color:SERIES[o.p]}));
+  h+=`<div><h2 class="section">All-Time Skunks (6th-place finishes)</h2><div class="card">${barChart(bars2,{fmt:v=>v})}</div></div></div>`;
+  // a couple of skunk stat tiles
+  const worstPlayer=car.slice().sort((x,y)=>y.places[6]-x.places[6])[0];
+  const personalWorst={};car.forEach(o=>{const s=scored.find(x=>x.p===o.p);personalWorst[o.p]=s?s.score:null;});
+  h+=`<h2 class="section">Skunk Notes</h2><div class="grid g3">
+    <div class="tile"><div class="k">All-time low</div><div class="v" style="color:var(--bad)">${f2(list[0].score)}</div><div class="s">${nm(list[0].p)} · ${list[0].season} ${wkName(list[0].week)}</div></div>
+    <div class="tile"><div class="k">Most 6th-place finishes</div><div class="v">${dot(worstPlayer.p)} ${nm(worstPlayer.p)}</div><div class="s">${worstPlayer.places[6]} skunks all-time</div></div>
+    <div class="tile"><div class="k">Sub-75 point weeks</div><div class="v">${scored.filter(x=>x.score<75).length}</div><div class="s">across ${SEASONS.length} seasons</div></div>
+  </div>`;
+  el("view-skunks").innerHTML=h;
+}
+function renderDynasty(){
+  let h=`<h2 class="section">Dynasty Grid — season finish by avg place</h2><div class="card wk"><table><thead><tr><th>Player</th>${SEASONS.map(s=>`<th>${String(s).slice(2)}</th>`).join("")}<th>Wins</th></tr></thead><tbody>`;
+  const rankBySeason={};SEASONS.forEach(s=>{const st=seasonStandings(s);rankBySeason[s]={};st.forEach((o,i)=>rankBySeason[s][o.p]=i+1);});
+  const cw=careerContestWins();
+  const car=careerAgg().sort((x,y)=>cw[y.p]-cw[x.p]||(x.avg??9)-(y.avg??9));
+  car.forEach(o=>{h+=`<tr><td class="wklbl">${dot(o.p)}${nm(o.p)}</td>`;
+    SEASONS.forEach(s=>{const rk=rankBySeason[s][o.p];
+      h+=`<td class="pl" style="width:56px;background:${placeBG(rk)}"><div class="cellwrap"><span class="p">${rk||'—'}</span></div></td>`;});
+    h+=`<td class="tnum" style="font-weight:800;color:var(--gold)">${cw[o.p]||'—'}</td></tr>`;});
+  h+=`</tbody></table></div><p class="hint">Each cell = that player's finishing rank (1–6 by average place) that season (green good, red skunk). <b>Wins</b> = total individual-contest wins all-time.</p>`;
+  el("view-dynasty").innerHTML=h;
+}
+
+/* ============ ENTER RESULTS (write form) ============ */
+const WEEK_OPTIONS=[...Array(18)].map((_,i)=>({label:"Week "+(i+1),value:"Week "+(i+1),kind:"r"}))
+  .concat([{label:"Playoff R1",value:"P1",kind:"p"},{label:"Playoff R2",value:"P2",kind:"p"},{label:"Championship",value:"Championships",kind:"c"}]);
+function renderEnter(){
+  const configured=API_URL && !API_URL.includes("PASTE_YOUR");
+  let h=`<h2 class="section">Enter Weekly Results</h2>`;
+  if(!configured){
+    h+=`<div class="notice">⚙️ <b>Not connected yet.</b> This form saves to your Google Sheet once you paste your deployed Web App URL into <code>API_URL</code> at the top of this file (see the setup guide). Until then you can preview the form but submitting is disabled.</div>`;
+  }else{
+    h+=`<div class="notice">Enter the six finishes for a week and hit <b>Save to Sheet</b>. Re-submitting the same week overwrites it, so fixing a typo is easy. Only people with the password can save; everyone else just views.</div>`;
+  }
+  h+=`<div class="card" style="max-width:640px"><div class="form-row">
+    <div class="field"><label>Season</label><input id="e_season" type="number" value="${CURRENT_SEASON}" style="width:100px"></div>
+    <div class="field"><label>Week</label><select id="e_week">${WEEK_OPTIONS.map(w=>`<option value="${w.value}" data-kind="${w.kind}">${w.label}</option>`).join("")}</select></div>
+    <div class="field"><label>Password</label><input id="e_pw" type="password" placeholder="league password" autocomplete="off"></div>
+  </div>
+  <table class="entry-tbl"><thead><tr><th>Player</th><th>Finish (1–6)</th><th>Score</th></tr></thead><tbody>
+    ${PLAYERS.map((p,i)=>`<tr><td class="who">${dot(i)}${p}</td>
+      <td><select id="e_place_${i}"><option value="">—</option>${[1,2,3,4,5,6].map(n=>`<option value="${n}">${n}</option>`).join("")}</select></td>
+      <td><input id="e_score_${i}" type="number" step="0.01" placeholder="0.00"></td></tr>`).join("")}
+  </tbody></table>
+  <div style="margin-top:16px;display:flex;gap:12px;align-items:center">
+    <button class="btn primary" id="e_submit" ${configured?"":"disabled"}>Save to Sheet</button>
+    <span style="font-size:12.5px;color:var(--muted)">Tip: leave a player blank if they missed the slate.</span>
+  </div>
+  <div class="msg" id="e_msg"></div>
+  </div>`;
+  el("view-enter").innerHTML=h;
+  if(configured) el("e_submit").addEventListener("click",submitWeek);
+}
+function submitWeek(){
+  const btn=el("e_submit"),msg=el("e_msg");
+  const season=+el("e_season").value;
+  const wsel=el("e_week");const week=wsel.value;const kind=wsel.selectedOptions[0].dataset.kind;
+  const password=el("e_pw").value;
+  if(!password){return showMsg("err","Enter the league password.");}
+  const rows=[],places=[];
+  for(let i=0;i<PLAYERS.length;i++){
+    const pv=el("e_place_"+i).value, sv=el("e_score_"+i).value;
+    if(pv==="") continue;
+    const place=+pv, score=(sv==="")?null:+sv;
+    places.push(place);
+    rows.push([season,week,kind,PLAYERS[i],place,score]);
+  }
+  if(!rows.length){return showMsg("err","Enter at least one player's finish.");}
+  const dups=places.length!==new Set(places).size;
+  btn.disabled=true;btn.textContent="Saving…";
+  fetch(API_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},
+    body:JSON.stringify({password,season,week,kind,replace:true,rows})})
+    .then(r=>r.json()).then(d=>{
+      if(d.ok){showMsg("ok",`Saved ${d.added} results for ${season} · ${week}.`+(dups?" (Heads up: you had duplicate finishes.)":""));
+        el("e_pw").value="";loadLive(true);}
+      else{showMsg("err",d.error||"Save failed.");}
+    }).catch(err=>showMsg("err","Network error: "+err))
+    .finally(()=>{btn.disabled=false;btn.textContent="Save to Sheet";});
+}
+function showMsg(type,text){const m=el("e_msg");m.className="msg show "+type;m.textContent=text;}
+
+/* ============ WIRE ============ */
+function rebuildSeasonSelect(){
+  el("seasonSel").innerHTML=ALL_SEASONS.slice().sort((a,b)=>b-a).map(s=>`<option value="${s}">${s}${s===CURRENT_SEASON?' (current)':s===LATEST?' (latest)':''}</option>`).join("");
+  el("seasonSel").value=SEASON;
+}
+function renderAll(){rebuildSeasonSelect();renderSeason();renderResults();renderHistory();renderRecords();renderSkunks();renderEnter();renderAbout();
+  el("lastupd").textContent="through "+LATEST+" season";}
+function renderAbout(){
+  el("view-about").innerHTML=`<h2 class="section">How this portal works</h2>
+  <div class="card" style="line-height:1.65">
+    <p style="margin-top:0">Everything here is computed live from <b>one flat dataset</b> — ${R.length.toLocaleString()} rows across ${SEASONS.length} seasons (${SEASONS[0]}–${LATEST}), ${PLAYERS.length} players. One row per player per week:</p>
+    <pre>season, week, kind, player, place, score
+2025, "Week 1", "r", "Chais", 3, 140.16
+2025, "Championships", "c", "Chais", 1, 166.76</pre>
+    <p><b>kind:</b> <code>r</code> regular week · <code>p</code> playoff (P1/P2) · <code>c</code> championship week. Standings, contest winners, records, skunks and the dynasty grid all derive from these rows.</p>
+    <p><b>Live updates:</b> the <b>＋ Enter Results</b> tab writes a week straight to your Google Sheet (password-protected). The Sheet is the source of truth; this page reads from it on load. When <code>API_URL</code> is blank it falls back to the built-in snapshot so the site never breaks.</p>
+    <p style="margin-bottom:0;color:var(--muted)">Hosted free on GitHub Pages — share the link with the league; they open it on any phone or laptop, no login to view.</p>
+  </div>`;
+}
+function markLive(on){const p=el("statusPill");if(on){p.textContent="● live from Sheet";p.classList.add("live");}else{p.textContent="local data";p.classList.remove("live");}}
+function loadLive(silent){
+  if(!API_URL || API_URL.includes("PASTE_YOUR")) return;
+  fetch(API_URL).then(r=>r.json()).then(d=>{
+    if(d&&d.ok&&d.rows&&d.rows.length){ingest(d.rows);markLive(true);renderAll();}
+  }).catch(()=>{ if(!silent) markLive(false); });
+}
+el("seasonSel").addEventListener("change",e=>{SEASON=+e.target.value;renderSeason();renderResults();});
+el("tabs").addEventListener("click",e=>{const b=e.target.closest(".tab");if(!b)return;
+  document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+  document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));
+  b.classList.add("active");el("view-"+b.dataset.view).classList.add("active");});
+window.togglePayout=function(){const d=el("payoutDrill"),c=el("payoutCaret");if(!d)return;const open=d.style.display!=="none";d.style.display=open?"none":"block";if(c)c.textContent=open?"▸":"▾";};
+el("themeBtn").addEventListener("click",()=>{const c=document.documentElement.getAttribute("data-theme");
+  document.documentElement.setAttribute("data-theme",c==="dark"?"light":"dark");renderAll();});
+
+/* boot: show embedded snapshot instantly, then try live data */
+ingest(RAW);
+renderAll();
+loadLive(false);
+</script>
+</body>
+</html>
