@@ -1,4 +1,13 @@
 <!DOCTYPE html>
+<script type="application/json" id="cowork-artifact-meta">
+{
+  "name": "Gridiron Dynasty Portal",
+  "schemaVersion": 1,
+  "description": "Fantasy football league portal prototype — live standings, all-time history, record book, and head-to-head grid, computed from a single games dataset. Demo data; to be connected to the league's Google Sheet.",
+  "mcpTools": [],
+  "mcpServerNames": []
+}
+</script>
 <html lang="en" data-theme="dark">
 <head>
 <meta charset="utf-8">
@@ -26,7 +35,7 @@
 body{font-family:var(--font);background:var(--page);color:var(--ink);-webkit-font-smoothing:antialiased;line-height:1.5}
 a{color:var(--s1);text-decoration:none}.tnum{font-variant-numeric:tabular-nums}
 header.topbar{position:sticky;top:0;z-index:20;backdrop-filter:saturate(1.4) blur(8px);background:color-mix(in srgb,var(--page) 82%,transparent);border-bottom:1px solid var(--border)}
-.topwrap{max-width:1160px;margin:0 auto;padding:14px 22px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.topwrap{max-width:1440px;margin:0 auto;padding:14px 22px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
 .brand{display:flex;align-items:center;gap:12px;font-weight:800;font-size:19px;letter-spacing:-.02em}
 .brand .logo{width:36px;height:36px;border-radius:9px;background:linear-gradient(135deg,var(--s1),var(--s6));display:grid;place-items:center;font-size:19px}
 .brand small{display:block;font-weight:500;font-size:11px;color:var(--muted)}
@@ -38,10 +47,10 @@ select,.btn,input{font-family:inherit;font-size:13px;color:var(--ink);background
 .btn.primary{background:var(--s1);border-color:var(--s1);color:#fff;font-weight:700}
 .btn.primary:hover{filter:brightness(1.08)}
 .btn:disabled{opacity:.5;cursor:not-allowed}
-nav.tabs{max-width:1160px;margin:0 auto;padding:0 22px;display:flex;gap:4px;overflow-x:auto}
+nav.tabs{max-width:1440px;margin:0 auto;padding:0 22px;display:flex;gap:4px;overflow-x:auto}
 .tab{appearance:none;border:0;background:none;font-family:inherit;font-size:14px;font-weight:600;color:var(--muted);padding:12px 14px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap}
 .tab:hover{color:var(--ink-2)}.tab.active{color:var(--ink);border-bottom-color:var(--s1)}
-main{max-width:1160px;margin:0 auto;padding:26px 22px 80px}
+main{max-width:1440px;margin:0 auto;padding:26px 22px 80px}
 .view{display:none;animation:fade .3s ease}.view.active{display:block}
 @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
 h2.section{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:34px 0 14px;font-weight:700}
@@ -50,20 +59,6 @@ h2.section:first-child{margin-top:0}
 .grid{display:grid;gap:16px}.g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:repeat(3,1fr)}
 @media(max-width:820px){.g2,.g3{grid-template-columns:1fr 1fr}}
 @media(max-width:560px){.g2,.g3{grid-template-columns:1fr}.topwrap{padding:12px 16px}main{padding:20px 14px 70px}}
-/* ---- responsive: wide tables scroll horizontally within their card ---- */
-.card{overflow-x:auto;-webkit-overflow-scrolling:touch}
-nav.tabs{-webkit-overflow-scrolling:touch}
-@media(max-width:640px){
-  main{padding:18px 12px 64px}
-  th,td{padding:8px 8px}
-  .tab{padding:11px 11px;font-size:13.5px}
-  h2.section{margin:26px 0 12px}
-  /* pin the identifier (first) column while the rest scrolls */
-  .card table th:first-child,.card table td:first-child{position:sticky;left:0;background:var(--surface);z-index:2}
-  .wk td.wklbl{position:sticky;left:0;background:var(--surface);z-index:2}
-  .champ-banner .cup{font-size:30px}.champ-banner .who{font-size:18px}
-}
-@media(max-width:430px){.status{display:none}}
 .champ-banner{display:flex;align-items:center;gap:16px;background:linear-gradient(135deg,color-mix(in srgb,var(--gold) 20%,var(--surface)),var(--surface));border:1px solid color-mix(in srgb,var(--gold) 35%,transparent);border-radius:var(--radius);padding:16px 20px}
 .champ-banner .cup{font-size:38px}.champ-banner .who{font-size:22px;font-weight:800}.champ-banner .sub{font-size:12.5px;color:var(--ink-2)}
 .tile{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:15px 17px}
@@ -80,7 +75,7 @@ td.who{display:flex;align-items:center;gap:9px;font-weight:600}
 .rank{color:var(--muted);width:20px;display:inline-block;text-align:right;margin-right:7px;font-variant-numeric:tabular-nums}
 .badge-champ{font-size:10.5px;font-weight:800;color:var(--gold);border:1px solid color-mix(in srgb,var(--gold) 40%,transparent);border-radius:999px;padding:2px 7px}
 .svgc{width:100%;height:auto;display:block;overflow:visible}.svgc text{font-family:var(--font)}
-.axislbl{fill:var(--muted);font-size:12.5px}.vallbl{fill:var(--ink);font-size:13.5px;font-weight:700;font-variant-numeric:tabular-nums}
+.axislbl{fill:var(--muted);font-size:11px}.vallbl{fill:var(--ink);font-size:12px;font-weight:700;font-variant-numeric:tabular-nums}
 .legend{display:flex;flex-wrap:wrap;gap:10px 16px;margin-top:12px}
 .legend .li{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--ink-2)}
 .legend .li .sw{width:12px;height:12px;border-radius:3px}
@@ -112,6 +107,17 @@ pre{background:var(--surface-2);border:1px solid var(--border);border-radius:9px
 .msg.ok{color:var(--good);background:color-mix(in srgb,var(--good) 12%,transparent);border:1px solid color-mix(in srgb,var(--good) 30%,transparent)}
 .msg.err{color:var(--bad);background:color-mix(in srgb,var(--bad) 12%,transparent);border:1px solid color-mix(in srgb,var(--bad) 30%,transparent)}
 .notice{font-size:13px;color:var(--ink-2);background:var(--surface-2);border:1px solid var(--border);border-radius:9px;padding:11px 14px;margin-bottom:16px}
+/* NFL win-pool pick cards — side by side */
+.zgrid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}
+@media(max-width:1000px){.zgrid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:620px){.zgrid{grid-template-columns:repeat(2,1fr)}}
+.zcard{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:11px 12px}
+.zhead{display:flex;align-items:center;gap:6px;font-weight:800;font-size:13.5px;margin-bottom:7px;border-bottom:1px solid var(--border);padding-bottom:7px}
+.zhead .nm{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.zhead .tot{color:var(--gold);font-variant-numeric:tabular-nums}
+.zrow{display:flex;justify-content:space-between;gap:6px;font-size:12.5px;padding:3px 0}
+.zrow .t{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.zrow .r{color:var(--ink-2);font-variant-numeric:tabular-nums;flex:none}
 </style>
 </head>
 <body>
@@ -130,6 +136,7 @@ pre{background:var(--surface-2);border:1px solid var(--border);border-radius:9px
     <button class="tab" data-view="records">Record Book</button>
     <button class="tab" data-view="skunks">🦨 Skunks</button>
     <button class="tab" data-view="enter">＋ Enter Results</button>
+    <button class="tab" data-view="zooter">🏈 Win Pool</button>
     <button class="tab" data-view="about">About / Data</button>
   </nav>
 </header>
@@ -140,6 +147,7 @@ pre{background:var(--surface-2);border:1px solid var(--border);border-radius:9px
   <section class="view" id="view-records"></section>
   <section class="view" id="view-skunks"></section>
   <section class="view" id="view-enter"></section>
+  <section class="view" id="view-zooter"></section>
   <section class="view" id="view-about"></section>
   <div class="footer">DK Degenerates League Portal · built from the Degenerate Tracker · <span id="lastupd"></span></div>
 </main>
@@ -1190,7 +1198,7 @@ function ord(n){return n+(["th","st","nd","rd","th","th","th"][n]||"th");}
 
 /* ============ CHARTS ============ */
 function stackedFinish(a){
-  const W=560,rowH=34,padL=96,padR=54,H=a.length*rowH+10;
+  const W=720,rowH=34,padL=96,padR=54,H=a.length*rowH+10;
   const totals=a.map(o=>o.places.slice(1).reduce((s,v)=>s+v,0));const max=Math.max(...totals,1);
   let s=`<svg class="svgc" viewBox="0 0 ${W} ${H}" role="img">`;
   a.forEach((o,i)=>{const y=i*rowH+8;let x=padL;
@@ -1202,7 +1210,7 @@ function stackedFinish(a){
   return s+`</svg>`;
 }
 function barChart(rows,{fmt=v=>v}={}){
-  const W=560,rowH=32,padL=96,padR=70,H=rows.length*rowH+8;const max=Math.max(...rows.map(r=>r.value),1);
+  const W=720,rowH=32,padL=96,padR=70,H=rows.length*rowH+8;const max=Math.max(...rows.map(r=>r.value),1);
   let s=`<svg class="svgc" viewBox="0 0 ${W} ${H}" role="img">`;
   rows.forEach((r,i)=>{const y=i*rowH+8,w=Math.max(2,(r.value/max)*(W-padL-padR));
     s+=`<text class="axislbl" x="${padL-10}" y="${y+3}" text-anchor="end" style="fill:var(--ink-2);font-weight:600">${r.label}</text>`;
@@ -1515,12 +1523,100 @@ function submitWeek(){
 }
 function showMsg(type,text){const m=el("e_msg");m.className="msg show "+type;m.textContent=text;}
 
+/* ============ NFL WIN POOL (Zooter) ============ */
+/* Each pick: [pickNumber, playerIndex, teamFullName]  (playerIndex → PLAYERS) */
+const ZPICKS=[
+ [5,0,"Seattle Seahawks"],[8,0,"Denver Broncos"],[14,0,"Dallas Cowboys"],[21,0,"New Orleans Saints"],[29,0,"Las Vegas Raiders"],
+ [3,1,"Detroit Lions"],[10,1,"Cincinnati Bengals"],[18,1,"Minnesota Vikings"],[19,1,"Tampa Bay Buccaneers"],[27,1,"Carolina Panthers"],
+ [2,2,"Buffalo Bills"],[11,2,"Houston Texans"],[15,2,"Chicago Bears"],[24,2,"Washington Commanders"],[26,2,"New York Jets"],
+ [4,3,"Baltimore Ravens"],[9,3,"New England Patriots"],[17,3,"Green Bay Packers"],[20,3,"Indianapolis Colts"],[28,3,"Arizona Cardinals"],
+ [6,4,"Philadelphia Eagles"],[7,4,"San Francisco 49ers"],[13,4,"Los Angeles Chargers"],[22,4,"Pittsburgh Steelers"],[30,4,"Tennessee Titans"],
+ [1,5,"Los Angeles Rams"],[12,5,"Kansas City Chiefs"],[16,5,"Jacksonville Jaguars"],[23,5,"New York Giants"],[25,5,"Atlanta Falcons"]
+];
+/* offline fallback snapshot — team: [wins, losses] as of 2026 Week 4 */
+const NFL_SNAP={
+ "Arizona Cardinals":[1,3],"Atlanta Falcons":[2,2],"Baltimore Ravens":[3,1],"Buffalo Bills":[3,1],
+ "Carolina Panthers":[2,2],"Chicago Bears":[3,1],"Cincinnati Bengals":[2,2],"Cleveland Browns":[3,1],
+ "Dallas Cowboys":[2,2],"Denver Broncos":[2,2],"Detroit Lions":[2,2],"Green Bay Packers":[2,2],
+ "Houston Texans":[0,4],"Indianapolis Colts":[2,2],"Jacksonville Jaguars":[3,1],"Kansas City Chiefs":[4,0],
+ "Las Vegas Raiders":[3,1],"Los Angeles Chargers":[0,4],"Los Angeles Rams":[2,2],"Miami Dolphins":[0,4],
+ "Minnesota Vikings":[4,0],"New England Patriots":[2,2],"New Orleans Saints":[1,3],"New York Giants":[3,1],
+ "New York Jets":[1,3],"Philadelphia Eagles":[2,2],"Pittsburgh Steelers":[2,2],"San Francisco 49ers":[4,0],
+ "Seattle Seahawks":[3,1],"Tampa Bay Buccaneers":[0,4],"Tennessee Titans":[0,4],"Washington Commanders":[1,3]
+};
+let NFLW=Object.assign({},NFL_SNAP);
+let ZSTATUS={live:false,when:null};
+const NFL_API="https://site.web.api.espn.com/apis/v2/sports/football/nfl/standings?region=us&lang=en&contentorigin=espn&type=2&level=1&season=2026";
+/* recursively pull team → [wins,losses] out of ESPN's standings JSON (shape-agnostic) */
+function parseNFL(json){
+  const out={};
+  (function walk(o){
+    if(!o||typeof o!=='object')return;
+    if(Array.isArray(o)){o.forEach(walk);return;}
+    const t=o.team;
+    if(t&&(t.displayName||t.name)&&Array.isArray(o.stats)){
+      let w=null,l=null;
+      o.stats.forEach(s=>{const k=(s.type||s.name||'').toLowerCase();
+        if(k==='wins')w=+s.value; else if(k==='losses')l=+s.value;});
+      if(w!=null)out[t.displayName||t.name]=[w,(l==null?null:l)];
+    }
+    for(const k in o)walk(o[k]);
+  })(json);
+  return out;
+}
+function loadNFL(){
+  fetch(NFL_API).then(r=>r.json()).then(j=>{
+    const m=parseNFL(j);
+    if(Object.keys(m).length>=20){          // sanity: got most of the league
+      NFLW=Object.assign({},NFL_SNAP,m);
+      ZSTATUS={live:true,when:new Date()};
+      renderZooter();
+    }
+  }).catch(()=>{});                          // stay on snapshot if blocked/offline
+}
+const nflWL=team=>NFLW[team]||NFL_SNAP[team]||[0,0];
+const nflWins=team=>nflWL(team)[0]||0;
+function zStandings(){
+  const tot=PLAYERS.map((_,i)=>({p:i,wins:0,teams:0}));
+  ZPICKS.forEach(([n,p,team])=>{tot[p].wins+=nflWins(team);tot[p].teams++;});
+  tot.sort((a,b)=>b.wins-a.wins);
+  return tot;
+}
+function renderZooter(){
+  const st=zStandings();const lead=st.length?st[0].wins:0;
+  const badge=ZSTATUS.live
+    ? `<span style="font-size:11px;font-weight:700;padding:4px 9px;border-radius:999px;border:1px solid color-mix(in srgb,var(--good) 40%,transparent);color:var(--good)">● live from ESPN${ZSTATUS.when?' · '+ZSTATUS.when.toLocaleTimeString([], {hour:'numeric',minute:'2-digit'}):''}</span>`
+    : `<span style="font-size:11px;font-weight:700;padding:4px 9px;border-radius:999px;border:1px solid var(--border);color:var(--muted)">snapshot · Week 4</span>`;
+  let h=`<h2 class="section">2026 NFL Wins Pool ${badge}</h2>`;
+  h+=`<div class="notice">Each player drafts <b>5 NFL teams</b>; whoever's teams pile up the most combined wins over the season takes it. Records pull <b>live from ESPN</b> each time the page loads. <button class="btn" id="z_refresh" style="margin-left:6px">↻ Refresh</button></div>`;
+  // Dynamic summary
+  h+=`<div class="card"><table><thead><tr><th>Player</th><th>Total Wins</th><th>Teams</th><th>Avg / Team</th></tr></thead><tbody>`;
+  st.forEach((o,i)=>{const isLead=o.wins===lead;
+    h+=`<tr><td class="who"><span class="rank tnum">${i+1}</span>${dot(o.p)}${nm(o.p)} ${isLead?'<span class="badge-champ">🏈 LEAD</span>':''}</td>
+      <td class="tnum" style="font-weight:800;color:${isLead?'var(--gold)':'var(--ink)'}">${o.wins}</td>
+      <td class="tnum">${o.teams}</td><td class="tnum">${(o.wins/o.teams).toFixed(2)}</td></tr>`;});
+  h+=`</tbody></table></div>`;
+  // Full detail — each player's 5 teams as a compact card, side by side
+  h+=`<h2 class="section">The Picks</h2><div class="zgrid">`;
+  st.forEach(o=>{
+    const picks=ZPICKS.filter(x=>x[1]===o.p).map(x=>{const r=nflWL(x[2]);return {team:x[2],w:r[0],l:r[1]};}).sort((a,b)=>b.w-a.w);
+    h+=`<div class="zcard"><div class="zhead">${dot(o.p)}<span class="nm">${nm(o.p)}</span><span class="tot">${o.wins}</span></div>`;
+    picks.forEach(pk=>{const nick=pk.team.split(' ').pop();
+      h+=`<div class="zrow"><span class="t">${nick}</span><span class="r">${pk.w}-${pk.l==null?'?':pk.l}</span></div>`;});
+    h+=`</div>`;
+  });
+  h+=`</div>`;
+  h+=`<h2 class="section">Total Wins</h2><div class="card">${barChart(st.map(o=>({label:nm(o.p),value:o.wins,color:SERIES[o.p]})),{fmt:v=>v})}</div>`;
+  el("view-zooter").innerHTML=h;
+  const rb=el("z_refresh");if(rb)rb.addEventListener("click",()=>{rb.textContent="↻ …";loadNFL();});
+}
+
 /* ============ WIRE ============ */
 function rebuildSeasonSelect(){
   el("seasonSel").innerHTML=ALL_SEASONS.slice().sort((a,b)=>b-a).map(s=>`<option value="${s}">${s}${s===CURRENT_SEASON?' (current)':s===LATEST?' (latest)':''}</option>`).join("");
   el("seasonSel").value=SEASON;
 }
-function renderAll(){rebuildSeasonSelect();renderSeason();renderResults();renderHistory();renderRecords();renderSkunks();renderEnter();renderAbout();
+function renderAll(){rebuildSeasonSelect();renderSeason();renderResults();renderHistory();renderRecords();renderSkunks();renderZooter();renderEnter();renderAbout();
   el("lastupd").textContent="through "+LATEST+" season";}
 function renderAbout(){
   el("view-about").innerHTML=`<h2 class="section">How this portal works</h2>
@@ -1554,6 +1650,7 @@ el("themeBtn").addEventListener("click",()=>{const c=document.documentElement.ge
 ingest(RAW);
 renderAll();
 loadLive(false);
+loadNFL();
 </script>
 </body>
 </html>
