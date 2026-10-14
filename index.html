@@ -118,6 +118,32 @@ pre{background:var(--surface-2);border:1px solid var(--border);border-radius:9px
 .zrow{display:flex;justify-content:space-between;gap:6px;font-size:12.5px;padding:3px 0}
 .zrow .t{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .zrow .r{color:var(--ink-2);font-variant-numeric:tabular-nums;flex:none}
+.zrow .pn{color:var(--muted);font-weight:700;font-variant-numeric:tabular-nums}
+h2.section .tag{white-space:nowrap}
+/* ---- mobile: condense dense list tables so they fit without side-scroll ---- */
+@media(max-width:560px){
+  th,td{padding:7px 6px}
+  table{font-size:12px}
+  .rank{margin-right:4px}
+  /* Season standings → Player, Avg Fin, 1st, 6th, Points */
+  .tbl-standings th:nth-child(4),.tbl-standings td:nth-child(4),
+  .tbl-standings th:nth-child(5),.tbl-standings td:nth-child(5),
+  .tbl-standings th:nth-child(6),.tbl-standings td:nth-child(6),
+  .tbl-standings th:nth-child(7),.tbl-standings td:nth-child(7),
+  .tbl-standings th:nth-child(10),.tbl-standings td:nth-child(10),
+  .tbl-standings th:nth-child(11),.tbl-standings td:nth-child(11){display:none}
+  /* Win Pool summary → Player, Total Wins only */
+  .tbl-winpool th:nth-child(3),.tbl-winpool td:nth-child(3),
+  .tbl-winpool th:nth-child(4),.tbl-winpool td:nth-child(4){display:none}
+  /* All-Time Leaderboard → Player, Contest Wins, Avg Fin */
+  .tbl-leader th:nth-child(4),.tbl-leader td:nth-child(4),
+  .tbl-leader th:nth-child(5),.tbl-leader td:nth-child(5),
+  .tbl-leader th:nth-child(6),.tbl-leader td:nth-child(6),
+  .tbl-leader th:nth-child(7),.tbl-leader td:nth-child(7){display:none}
+  /* Payout → Player, Collects, Pays, Net */
+  .tbl-payout th:nth-child(2),.tbl-payout td:nth-child(2),
+  .tbl-payout th:nth-child(3),.tbl-payout td:nth-child(3){display:none}
+}
 </style>
 </head>
 <body>
@@ -1290,7 +1316,7 @@ function payoutSection(season){
   const net=v=>(v<0?'−$':'+$')+Math.abs(v).toLocaleString();
   let h=`<h2 class="section">💰 Payout Tracker <span class="tag">$${d.u} per contest · ${d.N} players</span></h2>`;
   h+=`<div class="notice">Everyone pays <b>$30</b> to each winner of <b>Most Firsts</b>, <b>Best Avg</b>, <b>Highest Single</b>, and <b>Most Points</b>. The <b>🦨 Most Sixths</b> and <b>🦨 Fewest Points</b> loser each owes <b>$30 to every other player</b>. Net is what each player collects (+) or owes (−) for the season.</div>`;
-  h+=`<div class="card"><table><thead><tr><th>Player</th><th>Contests Won</th><th>🦨 Skunks</th><th>Collects</th><th>Pays</th><th>Net</th></tr></thead><tbody>`;
+  h+=`<div class="card"><table class="tbl-payout"><thead><tr><th>Player</th><th>Contests Won</th><th>🦨 Skunks</th><th>Collects</th><th>Pays</th><th>Net</th></tr></thead><tbody>`;
   d.rows.slice().sort((x,y)=>y.net-x.net).forEach(o=>{
     h+=`<tr><td class="who">${dot(o.p)}${nm(o.p)}</td>
       <td class="tnum" style="color:var(--gold)">${o.posWon||'—'}</td>
@@ -1329,7 +1355,7 @@ function renderSeason(){
   const hiWin=Math.max(...a.map(o=>o.hi??-1));
   const loMin=Math.min(...withGp.map(o=>o.lo??1e9));
   h+=`<h2 class="section">${SEASON} Standings <span class="tag">${a[0]?a[0].gp:0} weeks played</span></h2>`;
-  h+=`<div class="card"><table><thead><tr><th>Player</th><th>Avg Fin</th><th>1st</th><th>2nd</th><th>3rd</th><th>4th</th><th>5th</th><th>6th</th><th>Points</th><th>High</th><th>Low</th></tr></thead><tbody>`;
+  h+=`<div class="card"><table class="tbl-standings"><thead><tr><th>Player</th><th>Avg Fin</th><th>1st</th><th>2nd</th><th>3rd</th><th>4th</th><th>5th</th><th>6th</th><th>Points</th><th>High</th><th>Low</th></tr></thead><tbody>`;
   a.forEach((o,i)=>{h+=`<tr><td class="who"><span class="rank tnum">${i+1}</span>${dot(o.p)}${nm(o.p)}</td>
     <td class="tnum">${chip(f1(o.avg), o.avg===avgWin?HL_WIN:"")}</td>
     ${[1,2,3,4,5,6].map(pl=>{const v=o.places[pl]||'·';
@@ -1390,7 +1416,7 @@ function renderHistory(){
   const cw=careerContestWins();
   const a=careerAgg();a.forEach(o=>o.cw=cw[o.p]);
   a.sort((x,y)=>y.cw-x.cw||(x.avg??9)-(y.avg??9));
-  h+=`<h2 class="section">All-Time Leaderboard</h2><div class="card"><table><thead><tr><th>Player</th><th>Contest Wins</th><th>Avg Fin</th><th>1sts</th><th>6ths 🦨</th><th>Total Pts</th><th>Seasons</th></tr></thead><tbody>`;
+  h+=`<h2 class="section">All-Time Leaderboard</h2><div class="card"><table class="tbl-leader"><thead><tr><th>Player</th><th>Contest Wins</th><th>Avg Fin</th><th>1sts</th><th>6ths 🦨</th><th>Total Pts</th><th>Seasons</th></tr></thead><tbody>`;
   a.forEach((o,i)=>{h+=`<tr><td class="who"><span class="rank tnum">${i+1}</span>${dot(o.p)}${nm(o.p)}</td>
     <td class="tnum" style="font-weight:800;color:var(--gold)">${o.cw}</td><td class="tnum" style="font-weight:700">${f1(o.avg)}</td>
     <td class="tnum" style="color:var(--gold)">${o.places[1]}</td><td class="tnum" style="color:var(--bad)">${o.places[6]}</td>
@@ -1585,12 +1611,12 @@ function zStandings(){
 function renderZooter(){
   const st=zStandings();const lead=st.length?st[0].wins:0;
   const badge=ZSTATUS.live
-    ? `<span style="font-size:11px;font-weight:700;padding:4px 9px;border-radius:999px;border:1px solid color-mix(in srgb,var(--good) 40%,transparent);color:var(--good)">● live from ESPN${ZSTATUS.when?' · '+ZSTATUS.when.toLocaleTimeString([], {hour:'numeric',minute:'2-digit'}):''}</span>`
-    : `<span style="font-size:11px;font-weight:700;padding:4px 9px;border-radius:999px;border:1px solid var(--border);color:var(--muted)">snapshot · Week 4</span>`;
+    ? `<span style="font-size:11px;font-weight:700;padding:4px 9px;border-radius:999px;white-space:nowrap;display:inline-block;border:1px solid color-mix(in srgb,var(--good) 40%,transparent);color:var(--good)">● live from ESPN${ZSTATUS.when?' · '+ZSTATUS.when.toLocaleTimeString([], {hour:'numeric',minute:'2-digit'}):''}</span>`
+    : `<span style="font-size:11px;font-weight:700;padding:4px 9px;border-radius:999px;white-space:nowrap;display:inline-block;border:1px solid var(--border);color:var(--muted)">snapshot · Week 4</span>`;
   let h=`<h2 class="section">2026 NFL Wins Pool ${badge}</h2>`;
   h+=`<div class="notice">Each player drafts <b>5 NFL teams</b>; whoever's teams pile up the most combined wins over the season takes it. Records pull <b>live from ESPN</b> each time the page loads. <button class="btn" id="z_refresh" style="margin-left:6px">↻ Refresh</button></div>`;
   // Dynamic summary
-  h+=`<div class="card"><table><thead><tr><th>Player</th><th>Total Wins</th><th>Teams</th><th>Avg / Team</th></tr></thead><tbody>`;
+  h+=`<div class="card"><table class="tbl-winpool"><thead><tr><th>Player</th><th>Total Wins</th><th>Teams</th><th>Avg / Team</th></tr></thead><tbody>`;
   st.forEach((o,i)=>{const isLead=o.wins===lead;
     h+=`<tr><td class="who"><span class="rank tnum">${i+1}</span>${dot(o.p)}${nm(o.p)} ${isLead?'<span class="badge-champ">🏈 LEAD</span>':''}</td>
       <td class="tnum" style="font-weight:800;color:${isLead?'var(--gold)':'var(--ink)'}">${o.wins}</td>
@@ -1599,10 +1625,10 @@ function renderZooter(){
   // Full detail — each player's 5 teams as a compact card, side by side
   h+=`<h2 class="section">The Picks</h2><div class="zgrid">`;
   st.forEach(o=>{
-    const picks=ZPICKS.filter(x=>x[1]===o.p).map(x=>{const r=nflWL(x[2]);return {team:x[2],w:r[0],l:r[1]};}).sort((a,b)=>b.w-a.w);
+    const picks=ZPICKS.filter(x=>x[1]===o.p).map(x=>{const r=nflWL(x[2]);return {n:x[0],team:x[2],w:r[0],l:r[1]};}).sort((a,b)=>b.w-a.w);
     h+=`<div class="zcard"><div class="zhead">${dot(o.p)}<span class="nm">${nm(o.p)}</span><span class="tot">${o.wins}</span></div>`;
     picks.forEach(pk=>{const nick=pk.team.split(' ').pop();
-      h+=`<div class="zrow"><span class="t">${nick}</span><span class="r">${pk.w}-${pk.l==null?'?':pk.l}</span></div>`;});
+      h+=`<div class="zrow"><span class="t"><span class="pn">${pk.n}.</span> ${nick}</span><span class="r">${pk.w}-${pk.l==null?'?':pk.l}</span></div>`;});
     h+=`</div>`;
   });
   h+=`</div>`;
